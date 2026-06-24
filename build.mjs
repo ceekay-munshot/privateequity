@@ -21,6 +21,7 @@ const EXCLUDE = new Set([
   "build.mjs",
   "package.json",
   "package-lock.json",
+  "wrangler.toml",
   "README.md",
 ]);
 

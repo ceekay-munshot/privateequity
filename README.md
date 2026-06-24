@@ -91,6 +91,22 @@ A single source of truth in `styles.css`: a cool-warm gray neutral ramp, a blue 
 
 ---
 
+## Deploy (Cloudflare Pages / Netlify / any static host)
+
+The app is buildless, but `npm run build` is provided for hosts that expect a
+build step — it copies the static assets into `dist/`. A `wrangler.toml` pins
+the Pages output directory to `dist`.
+
+| Setting | Value |
+| --- | --- |
+| Build command | `npm run build` |
+| Build output directory | `dist` (set via `wrangler.toml`) |
+
+> If a deploy fails with `ENOENT … package.json`, the host is building an old
+> commit from before this config was added — deploy the latest commit on
+> `main` rather than retrying the old build. With **no** build step you can
+> instead leave the build command empty and publish from the repo root.
+
 ## Notes
 
 - All data is **mock** and lives in `data.js` / `exploredata.js`; nothing leaves the browser.

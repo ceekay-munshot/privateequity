@@ -1,0 +1,5 @@
+# Cloudflare Pages configuration (read automatically on deploy).
+# This app is buildless; `npm run build` (see package.json) copies the
+# static assets into ./dist, which is what Pages publishes.
+name = "munshot-diligence-os"
+pages_build_output_dir = "dist"
