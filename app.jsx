@@ -40,7 +40,8 @@ function App() {
 
   const navigate = uC((view, params = {}) => {
     setRoute({ view, params });
-    document.querySelector(".app-content") && document.querySelector(".app-content").scrollTo(0, 0);
+    const el = document.querySelector(".app-content");
+    if (el && el.scrollTo) el.scrollTo(0, 0);
   }, []);
 
   const toast = uC((msg, kind = "") => {

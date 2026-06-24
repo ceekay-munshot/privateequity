@@ -1,5 +1,6 @@
 # Cloudflare Pages configuration (read automatically on deploy).
-# This app is buildless; `npm run build` (see package.json) copies the
-# static assets into ./dist, which is what Pages publishes.
-name = "munshot-diligence-os"
-pages_build_output_dir = "dist"
+# This app is fully self-contained: React is vendored in ./vendor and the
+# JSX is precompiled into ./build (both committed). No build step or CDN is
+# required at deploy time — Pages serves the repository root as static assets.
+name = "paragon-deal-os"
+pages_build_output_dir = "."

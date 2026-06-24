@@ -188,45 +188,63 @@ function DealTable({ deals, sort, setSort, eff, move, logAction }) {
 
 function KanbanBoard({ deals, eff, move, logAction }) {
   const ctx = useContext(AppCtx);
+  const [dragId, setDragId] = useState(null);
+  const [overStage, setOverStage] = useState(null);
+  const drop = (stage) => {
+    const d = deals.find((x) => x.id === dragId);
+    if (d && eff(d) !== stage) move(d, stage);
+    setDragId(null); setOverStage(null);
+  };
   return (
-    <div className="scroll" style={{ overflowX: "auto", paddingBottom: 8 }}>
-      <div style={{ display: "flex", gap: 12, minWidth: "min-content" }}>
-        {STAGES.map((stage) => {
-          const items = deals.filter((d) => eff(d) === stage);
-          const nextStage = STAGES[STAGES.indexOf(stage) + 1];
-          return (
-            <div key={stage} style={{ width: 240, flex: "none" }}>
-              <div className="row between center" style={{ padding: "0 4px 10px" }}>
-                <div className="row gap-6 center"><StatusPill status={stage} dot={true} /><span className="num" style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>{items.length}</span></div>
-              </div>
-              <div className="col gap-8" style={{ background: "var(--bg-sunken)", borderRadius: 10, padding: 8, minHeight: 120 }}>
-                {items.map((d) => (
-                  <div key={d.id} className="card card-hover pointer kanban-card" style={{ padding: 11 }} onClick={() => ctx.navigate("workspace", { id: d.id })}>
-                    <div className="row between center mb-8">
-                      <div className="row gap-8 center" style={{ minWidth: 0 }}>
-                        <LogoTile initials={d.initials} sector={d.sector} size={26} />
-                        <span style={{ fontWeight: 560, fontSize: 12.5 }} className="truncate">{d.name}</span>
+    <div>
+      <div className="row gap-6 center mb-12 t-small" style={{ color: "var(--text-muted)" }}>
+        <Icon name="grid" size={13} /> Drag a card to another column to move the deal between stages — or use the ⋯ menu.
+      </div>
+      <div className="scroll" style={{ overflowX: "auto", paddingBottom: 8 }}>
+        <div style={{ display: "flex", gap: 12, minWidth: "min-content" }}>
+          {STAGES.map((stage) => {
+            const items = deals.filter((d) => eff(d) === stage);
+            const over = overStage === stage;
+            return (
+              <div key={stage} style={{ width: 240, flex: "none" }}>
+                <div className="row between center" style={{ padding: "0 4px 10px" }}>
+                  <div className="row gap-6 center"><StatusPill status={stage} dot={true} /><span className="num" style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>{items.length}</span></div>
+                </div>
+                <div className={"col gap-8 kanban-col" + (over ? " drop-over" : "")}
+                  style={{ borderRadius: 10, padding: 8, minHeight: 150 }}
+                  onDragOver={(e) => { if (dragId != null) { e.preventDefault(); e.dataTransfer.dropEffect = "move"; if (!over) setOverStage(stage); } }}
+                  onDragLeave={(e) => { if (e.currentTarget === e.target) setOverStage((s) => (s === stage ? null : s)); }}
+                  onDrop={(e) => { e.preventDefault(); drop(stage); }}>
+                  {items.map((d) => (
+                    <div key={d.id}
+                      className={"card card-hover kanban-card" + (dragId === d.id ? " dragging" : "")}
+                      style={{ padding: 11 }}
+                      draggable={true}
+                      title="Drag to move between stages"
+                      onDragStart={(e) => { setDragId(d.id); e.dataTransfer.effectAllowed = "move"; e.dataTransfer.setData("text/plain", d.id); }}
+                      onDragEnd={() => { setDragId(null); setOverStage(null); }}
+                      onClick={() => ctx.navigate("workspace", { id: d.id })}>
+                      <div className="row between center mb-8">
+                        <div className="row gap-7 center" style={{ minWidth: 0 }}>
+                          <span className="kanban-grip" aria-hidden="true"></span>
+                          <LogoTile initials={d.initials} sector={d.sector} size={26} />
+                          <span style={{ fontWeight: 560, fontSize: 12.5 }} className="truncate">{d.name}</span>
+                        </div>
+                        <span onClick={(e) => e.stopPropagation()}><Menu items={dealMenu(ctx, d, move, logAction)} /></span>
                       </div>
-                      <span onClick={(e) => e.stopPropagation()}><Menu items={dealMenu(ctx, d, move, logAction)} /></span>
+                      <p className="t-small" style={{ lineHeight: 1.4, marginBottom: 9, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{d.take}</p>
+                      <div className="row between center">
+                        <span className="tag" style={{ fontSize: 10 }}>{d.sub}</span>
+                        <FitBar score={d.fit} />
+                      </div>
                     </div>
-                    <p className="t-small" style={{ lineHeight: 1.4, marginBottom: 9, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{d.take}</p>
-                    <div className="row between center">
-                      <span className="tag" style={{ fontSize: 10 }}>{d.sub}</span>
-                      <FitBar score={d.fit} />
-                    </div>
-                    {nextStage && (
-                      <button className="btn btn-ghost btn-sm kanban-move" style={{ width: "100%", marginTop: 8, justifyContent: "center" }}
-                        onClick={(e) => { e.stopPropagation(); move(d, nextStage); }}>
-                        Move to {nextStage} <Icon name="arrowRight" size={12} />
-                      </button>
-                    )}
-                  </div>
-                ))}
-                {items.length === 0 && <div style={{ textAlign: "center", padding: "16px 0", color: "var(--gray-400)", fontSize: 11.5 }}>Empty</div>}
+                  ))}
+                  {items.length === 0 && <div style={{ textAlign: "center", padding: "20px 0", color: over ? "var(--blue-600)" : "var(--gray-400)", fontSize: 11.5, fontWeight: over ? 560 : 400 }}>{over ? "Drop to move here" : "Drop deals here"}</div>}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

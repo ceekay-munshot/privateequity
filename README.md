@@ -37,23 +37,46 @@ Every figure carries a **confidence dot** and links back to a **sourced quote**.
 
 ## Run it
 
-The app loads its views over HTTP, so it must be **served** (opening `index.html` from the filesystem won't work):
+Fully self-contained — **no CDN, no in-browser Babel**. React is vendored in
+`vendor/` and the JSX is precompiled into `build/` (both committed), so it runs
+as pure static files:
 
 ```bash
-python3 -m http.server 8000   # or: npm start
+npm start          # serves the repo root on http://localhost:8000
+# or any static server: python3 -m http.server 8000
 ```
 
-Then open <http://localhost:8000>. Requires outbound access to `unpkg.com` for React 18 + Babel Standalone.
+Editing the UI? Change a `.jsx` and recompile:
+
+```bash
+npm install        # one-time: installs Babel (build-time only)
+npm run build      # recompiles .jsx → build/*.js
+```
 
 ## Deploy (Cloudflare Pages / any static host)
 
-`npm run build` copies the static assets into `dist/`; `wrangler.toml` pins the Pages output directory to `dist`. With no build step you can instead leave the build command empty and publish from the repo root.
+Nothing to build at deploy time — the repository **is** the deployable site.
+`wrangler.toml` sets the Pages output directory to the repo root (`.`).
+
+| Setting | Value |
+| --- | --- |
+| Build command | *(leave empty)* |
+| Build output directory | `/` |
+
+Because React is vendored and the JSX is precompiled, there is no external
+runtime dependency and no build step that can fail. (Run `npm run build` only
+when you've edited a `.jsx` and want to refresh `build/`.)
 
 ---
 
 ## Architecture
 
-A deliberately **buildless** SPA. `index.html` loads React 18 + Babel Standalone from a CDN, then each source file as a classic `<script type="text/babel">`. Classic scripts share one global scope, so files reference each other's top-level components directly and register views on `window.*` for the router in `app.jsx`.
+A deliberately simple SPA with **no bundler and no runtime dependencies**.
+`index.html` loads vendored React 18 (`vendor/`) and the precompiled views
+(`build/*.js`) as plain classic `<script>` tags. Classic scripts share one
+global scope, so files reference each other's top-level components directly and
+register views on `window.*` for the router in `app.jsx`. The `.jsx` files are
+the source of truth; `npm run build` precompiles them to `build/` (committed).
 
 ```
 data.js / exploredata.js   Mock domain model → window.DB
@@ -73,6 +96,10 @@ globalfiles.jsx            Firm-wide shared file library
 settings.jsx               Settings & Access — integrations + permissions
 editsection.jsx            Section configuration editor
 app.jsx                    Router, sidebar, top bar, overlays → mounts <App/>
+
+vendor/                    Vendored React 18 (production UMD) — no CDN
+build/                     Precompiled JSX → plain JS (generated, committed)
+build.mjs                  Precompiler (.jsx → build/)
 ```
 
 ### Keyboard shortcuts

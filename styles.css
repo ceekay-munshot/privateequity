@@ -517,7 +517,7 @@ body {
 
 /* segmented control */
 .seg { display: inline-flex; background: var(--bg-sunken); border-radius: var(--r-md); padding: 3px; gap: 2px; }
-.seg-item { font-size: 12.5px; font-weight: 540; color: var(--text-secondary); padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all .14s var(--ease); display: inline-flex; align-items: center; gap: 6px; }
+.seg-item { font-size: 12.5px; font-weight: 540; color: var(--text-secondary); padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all .14s var(--ease); display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .seg-item:hover { color: var(--text-primary); }
 .seg-item.active { background: #fff; color: var(--text-primary); box-shadow: var(--sh-xs); }
 .seg-item svg { width: 14px; height: 14px; }
@@ -537,10 +537,13 @@ body {
 .chip { display: inline-flex; align-items: center; text-align: left; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-md); font-size: 12.5px; color: var(--text-secondary); cursor: pointer; background: #fff; transition: all .14s; line-height: 1.4; }
 .chip:hover { border-color: var(--blue-400); background: var(--blue-50); color: var(--text-primary); }
 
-/* kanban move-to-next affordance — reveal on card hover */
-.kanban-card .kanban-move { opacity: 0; transition: opacity .14s var(--ease); }
-.kanban-card:hover .kanban-move { opacity: 1; }
-.kanban-card .kanban-move:hover { background: var(--blue-50); color: var(--blue-700); }
+/* kanban drag-and-drop */
+.kanban-col { background: var(--bg-sunken); border: 1.5px dashed transparent; transition: background .14s var(--ease), border-color .14s var(--ease); }
+.kanban-col.drop-over { background: var(--blue-50); border-color: var(--blue-400); }
+.kanban-card { cursor: grab; }
+.kanban-card:active { cursor: grabbing; }
+.kanban-card.dragging { opacity: .45; box-shadow: var(--sh-lg); }
+.kanban-grip { width: 9px; height: 14px; flex: none; cursor: grab; background-image: radial-gradient(var(--gray-300) 1.1px, transparent 1.2px); background-size: 4px 4px; background-position: 0 1px; }
 
 /* mini bar/line chart helpers use inline svg */
 .chart-grid line { stroke: var(--border); stroke-width: 1; }

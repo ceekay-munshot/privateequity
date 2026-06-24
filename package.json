@@ -1,10 +1,14 @@
 {
-  "name": "munshot-diligence-os",
+  "name": "paragon-deal-os",
   "version": "1.0.0",
   "private": true,
-  "description": "Munshot — Diligence & Intelligence OS. A buildless React single-page prototype for private-equity diligence.",
+  "description": "Paragon Capital — Deal & Diligence OS. A buildless, self-contained React prototype (vendored React, precompiled JSX, no CDN).",
   "scripts": {
     "build": "node build.mjs",
-    "start": "node -e \"const http=require('http'),p=require('path'),f=require('fs');http.createServer((q,s)=>{let u=q.url.split('?')[0];if(u==='/')u='/index.html';const fp=p.join(process.cwd(),decodeURIComponent(u));f.readFile(fp,(e,d)=>{if(e){s.statusCode=404;return s.end('Not found');}const t={'.html':'text/html','.css':'text/css','.js':'text/javascript','.jsx':'text/babel','.png':'image/png'}[p.extname(fp)]||'application/octet-stream';s.setHeader('Content-Type',t);s.end(d);});}).listen(8000,()=>console.log('Serving http://localhost:8000'))\""
+    "start": "node -e \"const http=require('http'),p=require('path'),f=require('fs');http.createServer((q,s)=>{let u=q.url.split('?')[0];if(u==='/')u='/index.html';const fp=p.join(process.cwd(),decodeURIComponent(u));f.readFile(fp,(e,d)=>{if(e){s.statusCode=404;return s.end('Not found');}const t={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml'}[p.extname(fp)]||'application/octet-stream';s.setHeader('Content-Type',t);s.end(d);});}).listen(8000,()=>console.log('Serving http://localhost:8000'))\""
+  },
+  "devDependencies": {
+    "@babel/core": "^7.29.0",
+    "@babel/preset-react": "^7.27.1"
   }
 }
