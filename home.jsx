@@ -4,19 +4,21 @@
 function HomeView() {
   const ctx = useContext(AppCtx);
   const db = window.DB;
+  const active = db.activeDeals();
+  const inDiligence = active.filter((d) => ["IC Review", "Pursuing"].includes(d.status)).length;
   const stats = [
-    { label: "Active Deals", value: "37", delta: "+12 this week", up: true, icon: "dealflow", color: "#2f6bff", view: "dealflow" },
-    { label: "Portfolio Companies", value: "14", delta: "1 needs attention", up: false, icon: "portfolio", color: "#16a34a", view: "portfolio" },
-    { label: "Sectors Tracked", value: "4", delta: "40 new signals", up: true, icon: "sector", color: "#7c5cfc", view: "sector" },
+    { label: "Active Deals", value: String(active.length), delta: "+3 this week", up: true, icon: "dealflow", color: "#2f6bff", view: "dealflow" },
+    { label: "In Diligence", value: String(inDiligence), delta: "IC review & pursuing", up: true, icon: "target", color: "#16a34a", view: "dealflow" },
+    { label: "Sectors Tracked", value: String(db.sectors.length), delta: "40 new signals", up: true, icon: "sector", color: "#7c5cfc", view: "sector" },
     { label: "Needs Review", value: "8", delta: "AI-flagged items", up: false, icon: "flag", color: "#e08a00", view: "dealflow" },
   ];
-  const recent = db.deals.filter((d) => ["Screening", "IC Review", "Triaging", "Pursuing"].includes(d.status)).slice(0, 5);
+  const recent = active.filter((d) => ["Screening", "IC Review", "Triaging", "Pursuing"].includes(d.status)).slice(0, 5);
   const [showAll, setShowAll] = useState(false);
   const shown = showAll ? recent : recent.slice(0, 3);
 
   return (
     <div className="page page-wide">
-      <PageHead title="Welcome back, Alex" sub="Here's what's moved across your pipeline, portfolio and sectors today.">
+      <PageHead title="Welcome back, Alex" sub="Here's what's moved across your pipeline and sectors today.">
         <button className="btn btn-secondary" onClick={() => ctx.navigate("dealflow", { weekly: true })}><Icon name="columns" size={15} /> Weekly Review</button>
         <button className="btn btn-primary" onClick={() => ctx.openWizard()}><Icon name="plus" size={15} /> New Deal</button>
       </PageHead>
@@ -67,7 +69,7 @@ function HomeView() {
             {db.activity.map((a, i) => (
               <div key={i} className="feed-item" style={{ borderBottom: i < db.activity.length - 1 ? "1px solid var(--border)" : "none" }}>
                 <span className="feed-ic" style={{ background: a.color + "1a", color: a.color }}>
-                  <Icon name={a.type === "file" ? "upload" : a.type === "flag" ? "flag" : a.type === "deal" ? "layers" : a.type === "section" ? "sparkles" : "trending"} size={14} />
+                  <Icon name={a.type === "file" ? "upload" : a.type === "flag" ? "flag" : a.type === "deal" ? "layers" : a.type === "status" ? "refresh" : a.type === "section" ? "sparkles" : "trending"} size={14} />
                 </span>
                 <div className="feed-main">
                   <div className="feed-line"><strong style={{ fontWeight: 560 }}>{a.deal}</strong> — {a.name}</div>

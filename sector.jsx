@@ -38,8 +38,11 @@ function SectorCoView({ params }) {
   const id = (params && params.id) || "pharma";
   const sector = db.sectors.find((s) => s.id === id) || db.sectors[0];
   const brief = db.briefing[id] || db.briefing.pharma;
-  const [tab, setTab] = useState("briefing");
+  const [tab, setTab] = useState((params && params.tab) || "briefing");
   const showPharma = id === "pharma";
+  const showMemory = !!sector.memory;
+  const mem = db.institutional[id];
+  const tenders = db.tenders.filter((t) => t.sector === id);
 
   return (
     <div className="page page-wide">
@@ -50,7 +53,15 @@ function SectorCoView({ params }) {
         <span className="pill pill-ready"><span className="dot"></span>Live · {sector.fresh}</span>
       </div>
 
-      <div className="mb-16"><Seg value={tab} onChange={setTab} options={[{ value: "briefing", label: "Briefing", icon: "fileText" }, { value: "signals", label: "Signals & Alerts", icon: "bell" }, ...(showPharma ? [{ value: "trackers", label: "Trackers", icon: "grid" }] : []), { value: "sources", label: "Sources", icon: "database" }]} /></div>
+      <div className="mb-16"><Seg value={tab} onChange={setTab} options={[
+        { value: "briefing", label: "Briefing", icon: "fileText" },
+        { value: "signals", label: "Signals & Alerts", icon: "bell" },
+        ...(tenders.length ? [{ value: "tenders", label: "Tenders & Policy", icon: "scale" }] : []),
+        ...(showPharma ? [{ value: "trackers", label: "Trackers", icon: "grid" }] : []),
+        ...(showMemory ? [{ value: "memory", label: "Institutional Memory", icon: "database" }] : []),
+        { value: "explore", label: "Explore", icon: "sparkles" },
+        { value: "sources", label: "Sources", icon: "database" },
+      ]} /></div>
 
       {tab === "briefing" && (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 20, alignItems: "start" }}>
@@ -129,6 +140,89 @@ function SectorCoView({ params }) {
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {tab === "tenders" && (
+        <div className="card" style={{ overflow: "hidden", maxWidth: 820 }}>
+          <div className="row between center" style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
+            <span className="t-small">Government tenders & policy movements tracked from tender portals and gazettes.</span>
+            <button className="btn btn-secondary btn-sm"><Icon name="bell" size={12} /> Alert on new</button>
+          </div>
+          <table className="dtable">
+            <thead><tr><th>Tender / Policy</th><th>Body</th><th className="num">Value</th><th>Closes</th><th>Status</th></tr></thead>
+            <tbody>
+              {tenders.map((t, i) => (
+                <tr key={i} style={{ cursor: "default" }}>
+                  <td style={{ fontWeight: 540 }}>{t.title}</td>
+                  <td className="t-small">{t.body}</td>
+                  <td className="num">{t.value}</td>
+                  <td className="t-small">{t.closes}</td>
+                  <td><StatusPill status={t.status === "Open" ? "On Track" : "Filed"} dot={false} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {tab === "memory" && mem && (
+        <div className="col gap-16">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+            <div className="card card-pad">
+              <div className="rail-panel-head"><h3 className="t-h3">Analyst Coverage</h3><span className="tag">historical record</span></div>
+              <div className="col gap-10 mt-8">
+                {mem.coverage.map((c) => (
+                  <div key={c.name} className="row between center">
+                    <div><div style={{ fontSize: 12.5, fontWeight: 540 }}>{c.name}</div><div className="t-small">{c.note}</div></div>
+                    <div style={{ textAlign: "right" }}><div className="t-small">{c.analyst}</div><div className="t-small num">since {c.since}</div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="card card-pad">
+              <div className="rail-panel-head"><h3 className="t-h3">Market Share Trend</h3><Icon name="trending" size={14} style={{ color: "var(--text-muted)" }} /></div>
+              <div className="row gap-16 center mb-12 mt-8"><div><div className="metric-label">Latest share</div><div className="num" style={{ fontSize: 22, fontWeight: 660 }}>{mem.marketShare[mem.marketShare.length - 1].v}%</div></div><div className="metric-delta delta-up"><Icon name="arrowUp" size={11} /> +{(mem.marketShare[mem.marketShare.length - 1].v - mem.marketShare[0].v).toFixed(1)}pp since {mem.marketShare[0].p}</div></div>
+              <BarChart series={mem.marketShare} color={sector.color} yfmt={(v) => v.toFixed(0) + "%"} h={150} />
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16 }}>
+            <div className="card" style={{ overflow: "hidden" }}>
+              <div className="rail-panel-head" style={{ padding: "13px 16px" }}><h3 className="t-h3">Comparables</h3><span className="tag">refreshed quarterly</span></div>
+              <table className="dtable" style={{ fontSize: 12.5 }}>
+                <thead><tr><th>Company</th><th className="num">P/B</th><th className="num">P/E</th><th className="num">Combined ratio</th></tr></thead>
+                <tbody>
+                  {mem.comps.map((c) => (
+                    <tr key={c.co} style={{ cursor: "default" }}>
+                      <td style={{ fontWeight: 540 }}>{c.co}</td>
+                      <td className="num">{c.pb}</td><td className="num">{c.pe}</td><td className="num">{c.combined}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="card card-pad">
+              <div className="rail-panel-head"><h3 className="t-h3">Cap Table</h3><Icon name="users" size={14} style={{ color: "var(--text-muted)" }} /></div>
+              <div className="col gap-10 mt-8">
+                {mem.capTable.map((h) => (
+                  <div key={h.holder}>
+                    <div className="row between center mb-4"><span style={{ fontSize: 12 }}>{h.holder}</span><span className="num t-small" style={{ fontWeight: 600 }}>{h.pct}%</span></div>
+                    <div className="fit-track" style={{ width: "100%", height: 6 }}><div className="fit-fill" style={{ width: h.pct + "%", background: sector.color }}></div></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {tab === "explore" && (
+        <div style={{ maxWidth: 900 }}>
+          <div className="card" style={{ marginBottom: 14, padding: "11px 16px", display: "flex", gap: 10, alignItems: "center", borderColor: "var(--violet-50)", background: "var(--violet-50)" }}>
+            <Icon name="sparkles" size={15} style={{ color: "var(--violet-500)" }} />
+            <span className="t-small" style={{ color: "var(--text-primary)" }}>Ask questions against everything tracked in <strong>{sector.name}</strong> — briefings, signals, comps and filings.</span>
+          </div>
+          <window.QueryBuilder embedded={true} />
         </div>
       )}
 

@@ -12,31 +12,29 @@ function CommandPalette({ onClose }) {
 
   const nav = [
     { group: "Go to", icon: "home", title: "Home", sub: "Overview & activity", action: () => go("home") },
-    { group: "Go to", icon: "dealflow", title: "Deal Flow", sub: "Inbound pipeline · 12 new", action: () => go("dealflow") },
-    { group: "Go to", icon: "portfolio", title: "Portfolio", sub: "Companies you own", action: () => go("portfolio") },
+    { group: "Go to", icon: "dealflow", title: "Deal Flow", sub: "Inbound pipeline · 6 active", action: () => go("dealflow") },
     { group: "Go to", icon: "sector", title: "Sector Intelligence", sub: "Tracked themes", action: () => go("sector") },
+    { group: "Go to", icon: "sparkles", title: "Explore", sub: "Ask against a deal or sector", action: () => go("explore") },
     { group: "Go to", icon: "documents", title: "Documents", sub: "Files & query builder", action: () => go("documents") },
     { group: "Go to", icon: "memos", title: "Memos & Models", sub: "Automation", action: () => go("memos") },
+    { group: "Go to", icon: "settings", title: "Settings & Access", sub: "Integrations & permissions", action: () => go("settings") },
   ];
   const actions = [
     { group: "Actions", icon: "plus", title: "New deal", sub: "Add to pipeline", tag: "⌘N", action: () => { onClose(); ctx.openWizard(); } },
-    { group: "Actions", icon: "sparkles", title: "Generate investment memo", sub: "From deal documents", action: () => go("memos") },
+    { group: "Actions", icon: "sparkles", title: "Generate screening memo", sub: "From emails + IM", action: () => go("memos") },
     { group: "Actions", icon: "columns", title: "Open Weekly Review", sub: "Batch this week's deals", action: () => go("dealflow", { weekly: true }) },
+    { group: "Actions", icon: "folder", title: "View archived deals", sub: "Deals you've passed", action: () => go("dealflow") },
   ];
-  const deals = window.DB.deals.map((d) => ({
+  const deals = window.DB.activeDeals().map((d) => ({
     group: "Deals", icon: "layers", title: d.name, sub: d.sector + " · " + d.strategy, tag: d.fit ? "Fit " + d.fit : "",
     action: () => go("workspace", { id: d.id }),
-  }));
-  const cos = window.DB.portfolio.map((p) => ({
-    group: "Portfolio", icon: "building", title: p.name, sub: p.sector + " · " + p.own + "% owned",
-    action: () => go("portfolioco", { id: p.id }),
   }));
   const secs = window.DB.sectors.map((s) => ({
     group: "Sectors", icon: "sector", title: s.name, sub: s.signals + " new signals",
     action: () => go("sectorco", { id: s.id }),
   }));
 
-  let all = [...nav, ...actions, ...deals, ...cos, ...secs];
+  let all = [...nav, ...actions, ...deals, ...secs];
   if (q.trim()) {
     const t = q.toLowerCase();
     all = all.filter((i) => (i.title + " " + i.sub + " " + i.group).toLowerCase().includes(t));

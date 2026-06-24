@@ -174,19 +174,23 @@ function KeyClauses() {
 /* ---------- Ingestion Sources ---------- */
 function IngestionSources() {
   const db = window.DB;
-  const IC = { mail: "mail", folder: "folder", chat: "chat", api: "api" };
+  const ctx = useContext(AppCtx);
   return (
-    <div style={{ maxWidth: 760 }}>
-      <div className="card" style={{ marginBottom: 14, padding: "12px 16px", display: "flex", gap: 11, alignItems: "center", borderColor: "var(--blue-200)", background: "var(--blue-50)" }}>
-        <Icon name="info" size={16} style={{ color: "var(--blue-600)" }} />
-        <span className="t-small" style={{ color: "var(--text-primary)" }}>Opportunities land automatically and get parsed straight into the pipeline. Connect more channels to widen your top of funnel.</span>
+    <div style={{ maxWidth: 800 }}>
+      <div className="card" style={{ marginBottom: 14, padding: "14px 16px", display: "flex", gap: 12, alignItems: "center", borderColor: "var(--blue-200)", background: "linear-gradient(90deg, var(--blue-50), #fff 70%)" }}>
+        <span className="feed-ic" style={{ background: "var(--blue-100)", color: "var(--blue-600)" }}><Icon name="sparkles" size={16} /></span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 13, fontWeight: 560 }}>Email → status automation</div>
+          <div className="t-small">Everything forwarded to <strong style={{ color: "var(--text-secondary)" }}>{db.intakeEmail}</strong> is parsed into the pipeline. The AI reads "next steps" tables and moves deals automatically.</div>
+        </div>
+        <button className="btn btn-secondary btn-sm" onClick={() => ctx.navigate("dealflow")}>Review updates <Icon name="arrowRight" size={13} /></button>
       </div>
       <div className="card" style={{ overflow: "hidden" }}>
         {db.ingestion.map((s, i) => (
           <div key={s.name} className="row between center" style={{ padding: "13px 16px", borderBottom: i < db.ingestion.length - 1 ? "1px solid var(--border)" : "none" }}>
             <div className="row gap-12 center">
-              <span style={{ width: 34, height: 34, borderRadius: 9, background: "var(--bg-sunken)", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name={IC[s.icon]} size={16} /></span>
-              <div><div style={{ fontWeight: 540, fontSize: 13 }}>{s.name}</div><div className="t-small">{s.detail}</div></div>
+              <span style={{ width: 34, height: 34, borderRadius: 9, background: "var(--bg-sunken)", color: "var(--text-secondary)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name={s.icon} size={16} /></span>
+              <div><div className="row gap-7 center"><span style={{ fontWeight: 540, fontSize: 13 }}>{s.name}</span>{s.category && <span className="tag" style={{ fontSize: 10 }}>{s.category}</span>}</div><div className="t-small">{s.detail}</div></div>
             </div>
             <div className="row gap-14 center">
               <span className="t-small num">{s.sync}</span>
@@ -196,7 +200,10 @@ function IngestionSources() {
           </div>
         ))}
       </div>
-      <button className="btn btn-secondary" style={{ marginTop: 14 }}><Icon name="plus" size={14} /> Connect a source</button>
+      <div className="row gap-10 center" style={{ marginTop: 14 }}>
+        <button className="btn btn-secondary"><Icon name="plus" size={14} /> Connect a source</button>
+        <button className="btn btn-secondary" onClick={() => ctx.navigate("settings")}><Icon name="shield" size={14} /> Access control</button>
+      </div>
     </div>
   );
 }

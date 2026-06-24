@@ -537,6 +537,11 @@ body {
 .chip { display: inline-flex; align-items: center; text-align: left; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-md); font-size: 12.5px; color: var(--text-secondary); cursor: pointer; background: #fff; transition: all .14s; line-height: 1.4; }
 .chip:hover { border-color: var(--blue-400); background: var(--blue-50); color: var(--text-primary); }
 
+/* kanban move-to-next affordance — reveal on card hover */
+.kanban-card .kanban-move { opacity: 0; transition: opacity .14s var(--ease); }
+.kanban-card:hover .kanban-move { opacity: 1; }
+.kanban-card .kanban-move:hover { background: var(--blue-50); color: var(--blue-700); }
+
 /* mini bar/line chart helpers use inline svg */
 .chart-grid line { stroke: var(--border); stroke-width: 1; }
 

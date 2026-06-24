@@ -5,7 +5,7 @@ function MemosView() {
   const [tab, setTab] = useState("generate");
   return (
     <div className="page page-wide">
-      <PageHead title="Memos & Models" sub="Turn a deal's documents into your fund's own deliverables — what's a 3–4 day analyst job, in minutes." />
+      <PageHead title="Memos & Models" sub="Turn a deal's emails, IM and documents into your firm's own deliverables — what's a 3–4 day analyst job, in minutes." />
       <div className="mb-16"><Seg value={tab} onChange={setTab} options={[
         { value: "generate", label: "Generate", icon: "sparkles" },
         { value: "model", label: "Model", icon: "table" },
@@ -23,10 +23,10 @@ function MemosView() {
 function GenerateTab() {
   const ctx = useContext(AppCtx);
   const [deal, setDeal] = useState("Meridian Surgical");
-  const [output, setOutput] = useState("Investment Memo");
-  const [tmpl, setTmpl] = useState("Munshot IC Memo v3");
+  const [output, setOutput] = useState("Screening Memo");
+  const [tmpl, setTmpl] = useState("Paragon IC Memo v3");
   const [running, setRunning] = useState(false);
-  const outputs = [{ k: "Investment Memo", ic: "fileText" }, { k: "One-Pager", ic: "file" }, { k: "CIM", ic: "documents" }, { k: "Tear Sheet", ic: "grid" }];
+  const outputs = [{ k: "Screening Memo", ic: "fileText" }, { k: "Investment Memo", ic: "documents" }, { k: "One-Pager", ic: "file" }, { k: "Tear Sheet", ic: "grid" }];
   const run = () => { setRunning(true); setTimeout(() => setRunning(false), 2200); };
   return (
     <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 20, alignItems: "start" }}>
@@ -44,10 +44,15 @@ function GenerateTab() {
           ))}
         </div>
 
+        <div className="row gap-8 center mb-16" style={{ padding: "9px 12px", borderRadius: 9, background: "var(--violet-50)", border: "1px solid #e3d9fd" }}>
+          <Icon name="sparkles" size={14} style={{ color: "var(--violet-500)", flex: "none" }} />
+          <span className="t-small" style={{ color: "var(--text-primary)" }}>Screening memos & one-pagers are auto-drafted by reading the deal's emails + IM against your house template.</span>
+        </div>
+
         <div className="label mb-8">3 · Format template</div>
         <div className="row gap-10 mb-16">
-          <select className="select" value={tmpl} onChange={(e) => setTmpl(e.target.value)}>{["Munshot IC Memo v3", "One-Pager (house style)", "LP Quarterly Format"].map((t) => <option key={t}>{t}</option>)}</select>
-          <button className="btn btn-secondary nowrap"><Icon name="templates" size={14} /> Manage</button>
+          <select className="select" value={tmpl} onChange={(e) => setTmpl(e.target.value)}>{["Paragon IC Memo v3", "One-Pager (house style)", "Screening Memo (1-page)"].map((t) => <option key={t}>{t}</option>)}</select>
+          <button className="btn btn-secondary nowrap" onClick={() => ctx.navigate("templates")}><Icon name="templates" size={14} /> Manage</button>
         </div>
 
         <div className="label mb-8">4 · Data scope</div>
@@ -64,18 +69,28 @@ function GenerateTab() {
         {running && <div style={{ marginTop: 14 }}><div className="skel" style={{ height: 9, marginBottom: 8 }}></div><div className="skel" style={{ height: 9, width: "78%", marginBottom: 8 }}></div><div className="skel" style={{ height: 9, width: "54%" }}></div></div>}
       </div>
 
-      <div className="card card-pad">
-        <div className="rail-panel-head"><h3 className="t-h3">Generated Library</h3></div>
-        {[
-          { n: "Meridian — IC Memo", t: "Verified", time: "2h ago", c: "verified" },
-          { n: "Northwind — One-Pager", t: "Needs Review", time: "1d ago", c: "review" },
-          { n: "Cobalt — Tear Sheet", t: "Verified", time: "3d ago", c: "verified" },
-        ].map((g, i) => (
-          <div key={i} className="row between center pointer" style={{ padding: "10px 0", borderBottom: i < 2 ? "1px solid var(--border)" : "none" }} onClick={() => ctx.toast("Opening " + g.n, "")}>
-            <div className="row gap-10 center"><span style={{ width: 28, height: 28, borderRadius: 7, background: "var(--red-50)", color: "var(--red-500)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="fileText" size={14} /></span><div><div style={{ fontSize: 12.5, fontWeight: 540 }}>{g.n}</div><div className="t-small">{g.time}</div></div></div>
-            <span className="row gap-5 center"><ConfDot level={g.c} /><span className="t-small">{g.t}</span></span>
-          </div>
-        ))}
+      <div className="col gap-16">
+        {/* automated weekly output */}
+        <div className="card card-pad" style={{ borderColor: "var(--blue-200)", background: "linear-gradient(180deg, var(--blue-50), #fff 70%)" }}>
+          <div className="row gap-8 center mb-8"><span style={{ width: 28, height: 28, borderRadius: 8, background: "var(--blue-100)", color: "var(--blue-600)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="calendar" size={15} /></span><h3 className="t-h3">Weekly Output</h3></div>
+          <p className="t-small mb-12">An automated weekly pipeline pack (PDF) — new deals, status moves and decisions — ready to send to the team for Monday's meeting.</p>
+          <button className="btn btn-primary btn-sm" style={{ width: "100%", justifyContent: "center" }} onClick={() => ctx.toast("Weekly pipeline PDF generated & sent to the team", "check")}><Icon name="download" size={13} /> Generate & send weekly PDF</button>
+          <div className="row gap-6 center mt-12 t-small" style={{ color: "var(--text-muted)" }}><Icon name="check" size={12} style={{ color: "var(--green-500)" }} /> Auto-runs every Monday 7:00 AM</div>
+        </div>
+
+        <div className="card card-pad">
+          <div className="rail-panel-head"><h3 className="t-h3">Generated Library</h3></div>
+          {[
+            { n: "Meridian — Screening Memo", t: "Verified", time: "2h ago", c: "verified" },
+            { n: "Northwind — One-Pager", t: "Needs Review", time: "1d ago", c: "review" },
+            { n: "Cobalt — Tear Sheet", t: "Verified", time: "3d ago", c: "verified" },
+          ].map((g, i) => (
+            <div key={i} className="row between center pointer" style={{ padding: "10px 0", borderBottom: i < 2 ? "1px solid var(--border)" : "none" }} onClick={() => ctx.toast("Opening " + g.n, "")}>
+              <div className="row gap-10 center"><span style={{ width: 28, height: 28, borderRadius: 7, background: "var(--red-50)", color: "var(--red-500)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="fileText" size={14} /></span><div><div style={{ fontSize: 12.5, fontWeight: 540 }}>{g.n}</div><div className="t-small">{g.time}</div></div></div>
+              <span className="row gap-5 center"><ConfDot level={g.c} /><span className="t-small">{g.t}</span></span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -164,7 +179,7 @@ function VelocityTab() {
         {brands.map((b) => (
           <div key={b.b} className="card card-pad" style={{ borderColor: b.mine ? "var(--blue-200)" : "var(--border)" }}>
             <div className="row between center mb-12">
-              <div className="row gap-8 center"><span style={{ fontWeight: 600, fontSize: 13.5 }}>{b.b}</span>{b.mine && <span className="pill pill-screening" style={{ fontSize: 10 }}><span className="dot"></span>Portfolio</span>}</div>
+              <div className="row gap-8 center"><span style={{ fontWeight: 600, fontSize: 13.5 }}>{b.b}</span>{b.mine && <span className="pill pill-screening" style={{ fontSize: 10 }}><span className="dot"></span>Tracked</span>}</div>
               <Sparkline data={b.trend} color={b.mine ? "#2f6bff" : "#7c8597"} w={120} h={32} />
             </div>
             <div className="grid" style={{ gridTemplateColumns: "repeat(3,1fr)", gap: 14 }}>

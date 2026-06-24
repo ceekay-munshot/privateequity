@@ -6,11 +6,11 @@ const { useState: uS, useEffect: uE, useCallback: uC } = React;
 const NAV = [
   { section: null, items: [
     { id: "home", label: "Home", icon: "home" },
-    { id: "dealflow", label: "Deal Flow", icon: "dealflow", badge: "12" },
+    { id: "dealflow", label: "Deal Flow", icon: "dealflow", badge: "6" },
   ]},
-  { section: "Monitor", items: [
-    { id: "portfolio", label: "Portfolio", icon: "portfolio", badge: "1", amber: true },
+  { section: "Intelligence", items: [
     { id: "sector", label: "Sector Intelligence", icon: "sector" },
+    { id: "explore", label: "Explore", icon: "sparkles" },
   ]},
   { section: "Work", items: [
     { id: "documents", label: "Documents", icon: "documents" },
@@ -21,9 +21,9 @@ const NAV = [
 ];
 
 const VIEW_TITLES = {
-  home: "Home", dealflow: "Deal Flow", portfolio: "Portfolio", sector: "Sector Intelligence",
+  home: "Home", dealflow: "Deal Flow", sector: "Sector Intelligence", explore: "Explore",
   documents: "Documents", globalfiles: "Global Files", memos: "Memos & Models", templates: "Templates", settings: "Settings",
-  workspace: "Deal Flow", portfolioco: "Portfolio", sectorco: "Sector Intelligence",
+  workspace: "Deal Flow", sectorco: "Sector Intelligence",
 };
 
 function App() {
@@ -73,26 +73,25 @@ function App() {
   const crumbs = (() => {
     const v = route.view;
     if (v === "workspace") { const d = window.DB.dealById(route.params.id); return [{ label: "Deal Flow", view: "dealflow" }, { label: d ? d.name : "Deal", cur: true }]; }
-    if (v === "portfolioco") { const p = window.DB.portfolioById(route.params.id); return [{ label: "Portfolio", view: "portfolio" }, { label: p ? p.name : "Company", cur: true }]; }
     if (v === "sectorco") { const s = window.DB.sectors.find((x) => x.id === route.params.id); return [{ label: "Sector Intelligence", view: "sector" }, { label: s ? s.name : "Sector", cur: true }]; }
     return [{ label: VIEW_TITLES[v] || "Home", cur: true }];
   })();
 
-  const activeNav = route.view === "workspace" ? "dealflow" : route.view === "portfolioco" ? "portfolio" : route.view === "sectorco" ? "sector" : route.view;
+  const activeNav = route.view === "workspace" ? "dealflow" : route.view === "sectorco" ? "sector" : route.view;
 
   const renderView = () => {
     switch (route.view) {
       case "home": return <window.HomeView />;
       case "dealflow": return <window.DealFlowView params={route.params} />;
       case "workspace": return <window.WorkspaceView params={route.params} />;
-      case "portfolio": return <window.PortfolioView />;
-      case "portfolioco": return <window.PortfolioCoView params={route.params} />;
       case "sector": return <window.SectorView />;
       case "sectorco": return <window.SectorCoView params={route.params} />;
+      case "explore": return <window.ExploreLanding params={route.params} />;
       case "documents": return <window.DocumentsView params={route.params} />;
       case "memos": return <window.MemosView />;
       case "globalfiles": return <window.GlobalFilesView />;
       case "templates": return <TemplatesView />;
+      case "settings": return <window.SettingsView params={route.params} />;
       default: return <window.HomeView />;
     }
   };
@@ -106,7 +105,7 @@ function App() {
           <div className="sb-top">
             <div className="sb-brand" onClick={() => navigate("home")}>
               <span className="sb-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 18V8l5 4 3-6 3 6 5-4v10" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg></span>
-              <div style={{ minWidth: 0 }}><div className="sb-name">Munshot</div><div className="sb-ws">Diligence OS</div></div>
+              <div style={{ minWidth: 0 }}><div className="sb-name">Paragon Capital</div><div className="sb-ws">Deal OS</div></div>
             </div>
             <button className="btn btn-icon btn-sm" style={{ color: "#8ea0c4", background: "transparent" }} onClick={() => setCollapsed((c) => !c)}><Icon name={collapsed ? "chevRight" : "chevLeft"} size={15} /></button>
           </div>
@@ -124,11 +123,11 @@ function App() {
             ))}
           </div>
           <div className="sb-foot">
+            <div className={"nav-item" + (activeNav === "settings" ? " active" : "")} title="Settings" onClick={() => navigate("settings")}><Icon name="settings" size={17} /><span>Settings & Access</span></div>
             <div className="nav-item" title="Help"><Icon name="help" size={17} /><span>Help & Support</span></div>
-            <div className="nav-item" title="Feedback"><Icon name="feedback" size={17} /><span>Send Feedback</span></div>
             <div className="sb-user">
               <Avatar name="Alex Chen" color="#2f6bff" />
-              <div className="sb-foot-text"><div className="nm">Alex Chen</div><div className="em">Partner · Munshot</div></div>
+              <div className="sb-foot-text"><div className="nm">Alex Chen</div><div className="em">Partner · Paragon Capital</div></div>
               <Icon name="chevDown" size={14} style={{ color: "#8ea0c4", marginLeft: "auto" }} className="sb-foot-text" />
             </div>
           </div>
@@ -150,9 +149,9 @@ function App() {
               <span style={{ flex: 1 }}>Type @ to jump to a deal, company or sector…</span>
               <span className="kbd">⌘K</span>
             </div>
-            <button className="btn btn-icon btn-ghost tip" onClick={() => toast("3 new alerts: 1 covenant, 2 deals", "")}><Icon name="bell" size={18} /><span className="tip-bub">Notifications</span></button>
+            <button className="btn btn-icon btn-ghost tip" onClick={() => toast("3 new alerts: 1 tender, 2 deals", "")}><Icon name="bell" size={18} /><span className="tip-bub">Notifications</span></button>
             <Menu align="right" trigger={<button className="btn btn-primary btn-sm"><Icon name="plus" size={14} /> New <Icon name="chevDown" size={12} /></button>}
-              items={[{ icon: "layers", text: "New Deal", onClick: () => setWizard(true) }, { icon: "portfolio", text: "Portfolio Company", onClick: () => navigate("portfolio") }, { icon: "sector", text: "Sector Tracker", onClick: () => navigate("sector") }]} />
+              items={[{ icon: "layers", text: "New Deal", onClick: () => setWizard(true) }, { icon: "sparkles", text: "Generate Memo", onClick: () => navigate("memos") }, { icon: "sector", text: "Sector Tracker", onClick: () => navigate("sector") }]} />
           </div>
 
           <div className={"app-content scroll" + (fullBleed ? " " : "")} style={fullBleed ? { padding: 0 } : {}}>
@@ -186,7 +185,7 @@ function App() {
 function TemplatesView() {
   const ctx = useContext(AppCtx);
   const tmpls = [
-    { n: "Munshot IC Memo v3", d: "Full investment committee memo — 14 sections.", use: "Default" },
+    { n: "Paragon IC Memo v3", d: "Full investment committee memo — 14 sections.", use: "Default" },
     { n: "One-Pager (house style)", d: "Single-page deal summary for partner reviews.", use: "" },
     { n: "LP Quarterly Format", d: "Portfolio update in LP-reporting layout.", use: "" },
     { n: "Standard Operating Model", d: "5-statement model template with comps tab.", use: "Model" },

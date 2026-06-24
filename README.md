@@ -1,113 +1,91 @@
-# Munshot — Diligence & Intelligence OS
+# Paragon Capital — Deal & Diligence OS
 
-A high-fidelity, interactive prototype of a private-equity **diligence and intelligence operating system**. Munshot takes a firm from raw inbound deal flow all the way to an investment-committee memo — with every extracted figure traceable back to its source document.
+A high-fidelity, interactive prototype of a private-equity **deal & diligence operating system**. Paragon takes a firm from raw inbound deal flow all the way to an investment-committee memo — with every extracted figure traceable back to its source document.
 
 > Built as a **zero-build** React application: open it in a browser and it runs. No bundler, no `npm install`, no toolchain.
-
-![Deal Flow](screenshots/01-explore.png)
 
 ---
 
 ## What it does
 
-Munshot models the full lifecycle of a PE deal team:
+Focused on **direct PE deals** end-to-end:
 
 | Area | Highlights |
 | --- | --- |
-| **Home** | Pipeline / portfolio / sector snapshot, recent deals with expandable AI theses, and a live activity feed. |
-| **Deal Flow** | A living pipeline of inbound opportunities ranked against your thesis, with **Table**, **Pipeline (Kanban)**, and **Weekly Review** triage modes. Sector / fit / status filters. |
-| **Deal Workspace** | A per-deal tear sheet — financial statements, key people, valuation, and an inline **Explore** copilot for deep-dive Q&A. |
-| **Portfolio** | Monitor held companies: MOIC, growth, covenant headroom, MIS time series, and a founder-interaction timeline. |
-| **Sector Intelligence** | Signal briefings, patent-cliff and drug-launch trackers, sentiment trends, and connected research sources. |
-| **Documents** | Deal files, a natural-language **query builder**, key-clause extraction, and ingestion-source management. |
-| **Global Files** | A firm-wide, thematic shared library (ILPA templates, comps, benchmarks, knowledge graphs). |
-| **Memos & Models** | Generate IC memos, build operating models, comps, and velocity analyses. |
-| **Explore** | A traceable research copilot with quant mode, scoped sources, and per-answer citations. |
+| **Home** | Pipeline & sector snapshot, recent deals with expandable AI theses, and a live activity feed (including auto status-changes from email). |
+| **Deal Flow** | Inbound pipeline ranked against your thesis, in **Table**, **Pipeline (Kanban)**, **Weekly Review**, and **Archived** views. Move deals between stages, import/export **Excel** trackers (1,000+ rows), and review **email → status** automations. |
+| **Deal Workspace** | A per-deal tear sheet — company overview (externally enriched), deal terms, pre/post-money, revenue & EBITDA, statements and key people. **Next Steps & Actionables** (banker calls, pipeline notes), a one-click **screening memo**, an inline **Explore** copilot, and deal-level access settings. |
+| **Sector Intelligence** | Signal briefings, **government tenders & policy**, drug-launch / patent-cliff trackers, sentiment, and **Institutional Memory** (analyst coverage, comps, cap tables, market-share history — e.g. Insurance). Ask questions against a sector with **Explore**. |
+| **Explore** | A research copilot you can scope to a single deal, a sector, or everything. |
+| **Documents** | Deal files, a natural-language query builder, key-clause extraction, and ingestion sources. |
+| **Memos & Models** | Auto-draft **screening memos / one-pagers** from emails + IMs using your house templates, build models & comps, and generate an **automated weekly pipeline PDF** for the team. |
+| **Settings & Access** | Connected integrations (email source-of-truth, Dropbox, Excel, external/EU alt-data, broker research) and **role-based permission controls**. |
+
+### Built around the feedback
+
+- **Pipeline:** passed deals move to an **Archived** section; companies flow through *triaging → screening → IC review → pursuing* on a Kanban; **actionables** capture next steps after discussions.
+- **Automation:** a central intake email (`deals@paragon.com`) is the source of truth; the AI reads "next steps" tables in emails and **auto-updates deal status**; Dropbox, Excel import/export, broker research and EU alternate-data feeds are wired in.
+- **Reporting:** screening memos, one-pagers and weekly PDFs generated from your refined templates.
+- **Data hygiene:** missing valuation/financials show a clean `—` placeholder rather than errors.
+- **Access:** views can be shared firm-wide or **restricted by role**.
 
 ### The differentiator: provenance everywhere
 
-Every figure carries a **confidence dot** and links back to a **sourced quote**. Hover any value to view its source documents, override it with a manual value (marked analyst-confirmed), re-run AI extraction, or report a data issue — with an inline PDF viewer that highlights the cited passage. A human can always override.
+Every figure carries a **confidence dot** and links back to a **sourced quote**. Hover any value to view its source documents, override it with a manual value, re-run AI extraction, or report a data issue — with an inline PDF viewer that highlights the cited passage.
 
 ---
 
 ## Run it
 
-The app loads its views over HTTP (the browser fetches each `*.jsx` for in-browser compilation), so it must be **served** — opening `index.html` from the filesystem won't work. Any static server does:
+The app loads its views over HTTP, so it must be **served** (opening `index.html` from the filesystem won't work):
 
 ```bash
-# Python (no install)
-python3 -m http.server 8000
-
-# or Node
-npx serve .
+python3 -m http.server 8000   # or: npm start
 ```
 
-Then open <http://localhost:8000>.
+Then open <http://localhost:8000>. Requires outbound access to `unpkg.com` for React 18 + Babel Standalone.
 
-> Requires outbound access to `unpkg.com`, from which React 18 and Babel Standalone are loaded via CDN.
+## Deploy (Cloudflare Pages / any static host)
+
+`npm run build` copies the static assets into `dist/`; `wrangler.toml` pins the Pages output directory to `dist`. With no build step you can instead leave the build command empty and publish from the repo root.
 
 ---
 
 ## Architecture
 
-A deliberately **buildless** single-page app. `index.html` pulls in React 18 + Babel Standalone from a CDN, then loads each source file as a classic `<script type="text/babel">` tag. Because classic scripts share one global lexical scope, files reference each other's top-level components directly, and each view registers itself on `window.*` for the router in `app.jsx`.
+A deliberately **buildless** SPA. `index.html` loads React 18 + Babel Standalone from a CDN, then each source file as a classic `<script type="text/babel">`. Classic scripts share one global scope, so files reference each other's top-level components directly and register views on `window.*` for the router in `app.jsx`.
 
 ```
-index.html          App shell, font + CDN loading, script order
-styles.css          Design system: tokens, components, layout (~560 lines)
-data.js             Mock domain data → window.DB (deals, portfolio, sectors, sources…)
-exploredata.js      Explore sessions, global-files tree, quant sample → augments window.DB
-
-icons.jsx           Feather-style stroke icon set → window.Icon
-components.jsx      Shared primitives: Menu, Modal, Drawer, charts, Prov, StatusPill…
-provenance.jsx      Source modal + inline highlighted PDF viewer
-commandpalette.jsx  ⌘K command palette
-
-home.jsx            Home dashboard
-dealflow.jsx        Deal Flow (table / kanban / weekly review)
-workspace.jsx       Deal workspace + tear sheet
-dealmodals.jsx      New-deal wizard, create/manage section modals
-portfolio.jsx       Portfolio list + company monitor
-sector.jsx          Sector intelligence list + detail
-documents.jsx       Files, query builder, key clauses, ingestion
-memos.jsx           Memos, models, comps, velocity
-explore.jsx         Explore copilot + file-filters drawer
-globalfiles.jsx     Firm-wide shared file library
-editsection.jsx     Section configuration editor
-app.jsx             Router, sidebar, top bar, overlays, toasts → mounts <App/>
+data.js / exploredata.js   Mock domain model → window.DB
+icons.jsx                  Feather-style icon set
+components.jsx             Shared primitives (Menu, Modal, charts, Prov, StatusPill…)
+provenance.jsx             Source modal + highlighted PDF viewer
+commandpalette.jsx         ⌘K command palette
+home.jsx                   Home dashboard
+dealflow.jsx               Deal Flow — table / kanban / weekly / archived, email automation, Excel I/O
+workspace.jsx              Deal workspace, tear sheet, actionables, deal settings
+dealmodals.jsx             New-deal wizard, section builders
+sector.jsx                 Sector intelligence, tenders, institutional memory
+documents.jsx              Files, query builder, key clauses, ingestion
+memos.jsx                  Memos, models, comps, weekly output
+explore.jsx                Explore copilot + global Explore landing
+globalfiles.jsx            Firm-wide shared file library
+settings.jsx               Settings & Access — integrations + permissions
+editsection.jsx            Section configuration editor
+app.jsx                    Router, sidebar, top bar, overlays → mounts <App/>
 ```
-
-### Design system
-
-A single source of truth in `styles.css`: a cool-warm gray neutral ramp, a blue interactive accent, semantic status colors, tabular-figure numerics, soft elevation shadows, and motion via shared easing curves. Inter for text, JetBrains Mono for figures.
 
 ### Keyboard shortcuts
 
 | Shortcut | Action |
 | --- | --- |
-| `⌘K` / `Ctrl-K` | Open the command palette |
+| `⌘K` / `Ctrl-K` | Command palette |
 | `⌘N` / `Ctrl-N` | New deal |
 | `Esc` | Close any modal / drawer |
 
 ---
 
-## Deploy (Cloudflare Pages / Netlify / any static host)
-
-The app is buildless, but `npm run build` is provided for hosts that expect a
-build step — it copies the static assets into `dist/`. A `wrangler.toml` pins
-the Pages output directory to `dist`.
-
-| Setting | Value |
-| --- | --- |
-| Build command | `npm run build` |
-| Build output directory | `dist` (set via `wrangler.toml`) |
-
-> If a deploy fails with `ENOENT … package.json`, the host is building an old
-> commit from before this config was added — deploy the latest commit on
-> `main` rather than retrying the old build. With **no** build step you can
-> instead leave the build command empty and publish from the repo root.
-
 ## Notes
 
 - All data is **mock** and lives in `data.js` / `exploredata.js`; nothing leaves the browser.
-- The UI is fully responsive — the right rail collapses under 1100px and the sidebar becomes a drawer under 760px.
+- The `screenshots/` folder captures an earlier build and is illustrative only.

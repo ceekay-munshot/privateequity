@@ -421,5 +421,43 @@ function FfNode({ node, depth, sel, setSel, expanded, setExpanded }) {
   );
 }
 
+/* ---------- Explore landing (global) — scope to a deal or sector ---------- */
+function ExploreLanding() {
+  const ctx = useContext(AppCtx);
+  const db = window.DB;
+  return (
+    <div className="page" style={{ maxWidth: 1000 }}>
+      <PageHead title="Explore" sub="Ask anything against your indexed data — scope it to a single deal, a sector, or everything." />
+
+      <div className="mb-20">
+        <div className="label mb-8">Ask about a deal</div>
+        <div className="row gap-8 wrap">
+          {db.activeDeals().map((d) => (
+            <button key={d.id} className="chip" onClick={() => ctx.navigate("workspace", { id: d.id, tab: "explore" })}>
+              <LogoTile initials={d.initials} sector={d.sector} size={20} /> {d.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="mb-20">
+        <div className="label mb-8">Ask about a sector</div>
+        <div className="row gap-8 wrap">
+          {db.sectors.map((s) => (
+            <button key={s.id} className="chip" onClick={() => ctx.navigate("sectorco", { id: s.id, tab: "explore" })}>
+              <span style={{ width: 18, height: 18, borderRadius: 5, background: s.color + "1a", color: s.color, display: "inline-flex", alignItems: "center", justifyContent: "center" }}><Icon name="sector" size={11} /></span> {s.name}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="divider mb-16"></div>
+      <div className="label mb-8">…or ask across everything</div>
+      <window.QueryBuilder embedded={true} />
+    </div>
+  );
+}
+
 window.ExploreView = ExploreView;
+window.ExploreLanding = ExploreLanding;
 window.FileFiltersDrawer = FileFiltersDrawer;

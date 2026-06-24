@@ -1,21 +1,34 @@
 /* ============================================================
    Deal Flow → window.DealFlowView
+   Active pipeline (table / kanban) · Weekly Review · Archived
+   Email→status automation · Excel import/export · actionables
    ============================================================ */
+const STAGES = ["Triaging", "Screening", "IC Review", "Pursuing"];
+
 function DealFlowView({ params }) {
   const ctx = useContext(AppCtx);
   const db = window.DB;
   const [view, setView] = useState(params && params.weekly ? "weekly" : "table");
   const [sort, setSort] = useState("fit");
   const [filters, setFilters] = useState({ sector: "All", minFit: 0, status: "All" });
+  const [overrides, setOverrides] = useState({});
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
-  let deals = [...db.deals];
+  const eff = (d) => overrides[d.id] || d.status;
+  const move = (d, to) => { setOverrides((o) => ({ ...o, [d.id]: to })); ctx.toast(d.name + " → " + (to === "Passed" ? "Archived" : to), to === "Passed" ? "flag" : "check"); };
+  const logAction = (d, label) => ctx.toast(label + " added to " + d.name + " actionables", "check");
+
+  let deals = db.deals.filter((d) => eff(d) !== "Passed");
+  const archived = db.deals.filter((d) => eff(d) === "Passed");
   if (filters.sector !== "All") deals = deals.filter((d) => d.sector === filters.sector);
-  if (filters.status !== "All") deals = deals.filter((d) => d.status === filters.status);
+  if (filters.status !== "All") deals = deals.filter((d) => eff(d) === filters.status);
   deals = deals.filter((d) => d.fit >= filters.minFit);
   deals.sort((a, b) => sort === "fit" ? b.fit - a.fit : sort === "rev" ? (b.revenue || 0) - (a.revenue || 0) : new Date(b.received) - new Date(a.received));
 
   const sectors = ["All", ...Object.keys(db.SECTOR_COLOR)];
-  const statuses = ["All", "New", "Triaging", "Screening", "IC Review", "Pursuing", "Passed"];
+  const statuses = ["All", ...STAGES];
+  const pendingEmail = db.inbox.reduce((n, e) => n + e.updates.filter((u) => !u.applied).length, 0);
 
   return (
     <div className="page page-wide">
@@ -24,21 +37,32 @@ function DealFlowView({ params }) {
           { value: "table", label: "Table", icon: "table" },
           { value: "kanban", label: "Pipeline", icon: "columns" },
           { value: "weekly", label: "Weekly Review", icon: "calendar" },
+          { value: "archived", label: "Archived", icon: "folder" },
         ]} />
         <button className="btn btn-primary" onClick={() => ctx.openWizard()}><Icon name="plus" size={15} /> New Deal</button>
       </PageHead>
 
-      {/* live ingestion banner */}
+      {/* live ingestion + email automation banner */}
       <div className="card" style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 16px", marginBottom: 18, borderColor: "var(--blue-200)", background: "linear-gradient(90deg, var(--blue-50), #fff 70%)" }}>
         <span className="feed-ic" style={{ background: "var(--blue-100)", color: "var(--blue-600)" }}><Icon name="mail" size={15} /></span>
         <div style={{ flex: 1 }}>
-          <span style={{ fontSize: 13, fontWeight: 560 }}>12 new deals this week</span>
-          <span className="t-small"> — auto-ingested from <strong style={{ color: "var(--text-secondary)" }}>deals@munshot.vc</strong>, Dropbox sync & WhatsApp connector. Metrics extracted automatically.</span>
+          <span style={{ fontSize: 13, fontWeight: 560 }}>{pendingEmail > 0 ? pendingEmail + " status updates" : "All caught up"} from email</span>
+          <span className="t-small"> — auto-ingested from <strong style={{ color: "var(--text-secondary)" }}>{db.intakeEmail}</strong>, Dropbox sync & WhatsApp. The AI reads "next steps" tables and moves deals automatically.</span>
         </div>
-        <button className="btn btn-ghost btn-sm" onClick={() => ctx.navigate("documents", { tab: "sources" })}>Manage sources <Icon name="arrowRight" size={13} /></button>
+        <button className="btn btn-ghost btn-sm" onClick={() => setEmailOpen(true)}>Review email updates {pendingEmail > 0 && <span className="nav-badge">{pendingEmail}</span>} <Icon name="arrowRight" size={13} /></button>
       </div>
 
-      {view === "weekly" ? <WeeklyReview deals={db.deals.filter((d) => d.isNew)} /> : (
+      {/* toolbar: excel import/export */}
+      {(view === "table" || view === "archived") && (
+        <div className="row gap-8 center mb-12" style={{ justifyContent: "flex-end" }}>
+          <span className="t-small" style={{ marginRight: "auto" }}>{view === "archived" ? archived.length + " archived" : deals.length + " active deals"}</span>
+          <button className="btn btn-secondary btn-sm" onClick={() => setImportOpen(true)}><Icon name="upload" size={13} /> Import Excel</button>
+          <button className="btn btn-secondary btn-sm" onClick={() => ctx.toast("Exporting " + (view === "archived" ? archived.length : deals.length) + " rows to Paragon_Pipeline.xlsx", "check")}><Icon name="download" size={13} /> Export Excel</button>
+        </div>
+      )}
+
+      {view === "weekly" ? <WeeklyReview deals={db.deals.filter((d) => d.isNew)} /> :
+       view === "archived" ? <ArchivedTable deals={archived} onRestore={(d) => move(d, "Screening")} /> : (
         <div style={{ display: "grid", gridTemplateColumns: "208px 1fr", gap: 20, alignItems: "start" }}>
           {/* filter rail */}
           <div className="card card-pad">
@@ -67,9 +91,12 @@ function DealFlowView({ params }) {
             </div>
           </div>
 
-          {view === "table" ? <DealTable deals={deals} sort={sort} setSort={setSort} /> : <KanbanBoard deals={deals} />}
+          {view === "table" ? <DealTable deals={deals} sort={sort} setSort={setSort} eff={eff} move={move} logAction={logAction} /> : <KanbanBoard deals={deals} eff={eff} move={move} logAction={logAction} />}
         </div>
       )}
+
+      {emailOpen && <EmailAutomationDrawer onClose={() => setEmailOpen(false)} />}
+      {importOpen && <ExcelImportModal onClose={() => setImportOpen(false)} />}
     </div>
   );
 }
@@ -83,7 +110,21 @@ function FilterGroup({ label, children }) {
   );
 }
 
-function DealTable({ deals, sort, setSort }) {
+function dealMenu(ctx, d, move, logAction) {
+  return [
+    { icon: "eye", text: "Open workspace", onClick: () => ctx.navigate("workspace", { id: d.id }) },
+    { icon: "sparkles", text: "Generate screening memo", onClick: () => ctx.navigate("memos") },
+    { label: "Move to stage" },
+    ...STAGES.map((s) => ({ icon: "arrowRight", text: s, onClick: () => move(d, s) })),
+    { sep: true },
+    { icon: "calendar", text: "Schedule banker call", onClick: () => logAction(d, "Banker call") },
+    { icon: "fileText", text: "Log next step / note", onClick: () => logAction(d, "Next step") },
+    { sep: true },
+    { icon: "flag", text: "Pass & archive", danger: true, onClick: () => move(d, "Passed") },
+  ];
+}
+
+function DealTable({ deals, sort, setSort, eff, move, logAction }) {
   const ctx = useContext(AppCtx);
   const th = (key, label, cls = "") => (
     <th className={"sortable " + cls} onClick={() => setSort(key)}>
@@ -132,15 +173,91 @@ function DealTable({ deals, sort, setSort }) {
                 <td className="num">{d.ebitda != null ? "$" + d.ebitda.toFixed(1) + "M" : "—"}</td>
                 <td className="num">{d.ask != null ? "$" + d.ask + "M" : "—"}</td>
                 <td className="num"><FitBar score={d.fit} /></td>
-                <td><StatusPill status={d.status} /></td>
+                <td><StatusPill status={eff(d)} /></td>
+                <td onClick={(e) => e.stopPropagation()}>
+                  <Menu items={dealMenu(ctx, d, move, logAction)} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function KanbanBoard({ deals, eff, move, logAction }) {
+  const ctx = useContext(AppCtx);
+  return (
+    <div className="scroll" style={{ overflowX: "auto", paddingBottom: 8 }}>
+      <div style={{ display: "flex", gap: 12, minWidth: "min-content" }}>
+        {STAGES.map((stage) => {
+          const items = deals.filter((d) => eff(d) === stage);
+          const nextStage = STAGES[STAGES.indexOf(stage) + 1];
+          return (
+            <div key={stage} style={{ width: 240, flex: "none" }}>
+              <div className="row between center" style={{ padding: "0 4px 10px" }}>
+                <div className="row gap-6 center"><StatusPill status={stage} dot={true} /><span className="num" style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>{items.length}</span></div>
+              </div>
+              <div className="col gap-8" style={{ background: "var(--bg-sunken)", borderRadius: 10, padding: 8, minHeight: 120 }}>
+                {items.map((d) => (
+                  <div key={d.id} className="card card-hover pointer kanban-card" style={{ padding: 11 }} onClick={() => ctx.navigate("workspace", { id: d.id })}>
+                    <div className="row between center mb-8">
+                      <div className="row gap-8 center" style={{ minWidth: 0 }}>
+                        <LogoTile initials={d.initials} sector={d.sector} size={26} />
+                        <span style={{ fontWeight: 560, fontSize: 12.5 }} className="truncate">{d.name}</span>
+                      </div>
+                      <span onClick={(e) => e.stopPropagation()}><Menu items={dealMenu(ctx, d, move, logAction)} /></span>
+                    </div>
+                    <p className="t-small" style={{ lineHeight: 1.4, marginBottom: 9, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{d.take}</p>
+                    <div className="row between center">
+                      <span className="tag" style={{ fontSize: 10 }}>{d.sub}</span>
+                      <FitBar score={d.fit} />
+                    </div>
+                    {nextStage && (
+                      <button className="btn btn-ghost btn-sm kanban-move" style={{ width: "100%", marginTop: 8, justifyContent: "center" }}
+                        onClick={(e) => { e.stopPropagation(); move(d, nextStage); }}>
+                        Move to {nextStage} <Icon name="arrowRight" size={12} />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {items.length === 0 && <div style={{ textAlign: "center", padding: "16px 0", color: "var(--gray-400)", fontSize: 11.5 }}>Empty</div>}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+/* ---------- Archived (passed) deals ---------- */
+function ArchivedTable({ deals, onRestore }) {
+  const ctx = useContext(AppCtx);
+  if (deals.length === 0) return (
+    <div className="empty-state"><span className="empty-ic"><Icon name="folder" size={26} /></span><div className="t-h3">Nothing archived</div><p className="t-body">Passed deals move here, out of your active pipeline.</p></div>
+  );
+  return (
+    <div className="card" style={{ overflow: "hidden" }}>
+      <div className="row between center" style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
+        <span className="t-small">Deals you've passed — kept for institutional memory, out of the active view.</span>
+      </div>
+      <div className="scroll" style={{ overflowX: "auto" }}>
+        <table className="dtable">
+          <thead><tr><th>Company</th><th>Sector</th><th>Source</th><th>Reason passed</th><th>Passed</th><th style={{ width: 36 }}></th></tr></thead>
+          <tbody>
+            {deals.map((d) => (
+              <tr key={d.id} onClick={() => ctx.navigate("workspace", { id: d.id })}>
+                <td><span className="row gap-10 center"><LogoTile initials={d.initials} sector={d.sector} size={30} /><span style={{ fontWeight: 540 }}>{d.name}</span></span></td>
+                <td><div style={{ fontSize: 12.5 }}>{d.sector}</div><div className="t-small">{d.sub}</div></td>
+                <td className="t-small">{d.source}</td>
+                <td className="t-small" style={{ maxWidth: 280 }}>{d.passReason || "—"}</td>
+                <td className="t-small nowrap">{d.passedDate ? fmtDate(d.passedDate) : "—"}</td>
                 <td onClick={(e) => e.stopPropagation()}>
                   <Menu items={[
                     { icon: "eye", text: "Open workspace", onClick: () => ctx.navigate("workspace", { id: d.id }) },
-                    { icon: "sparkles", text: "Generate memo", onClick: () => ctx.navigate("memos") },
-                    { icon: "sourceDoc", text: "View source documents", onClick: () => ctx.openSource("default") },
-                    { sep: true },
-                    { icon: "checkCircle", text: "Move to Pursuing" },
-                    { icon: "flag", text: "Pass on deal", danger: true, onClick: () => ctx.toast("Marked as passed", "flag") },
+                    { icon: "refresh", text: "Restore to pipeline", onClick: () => onRestore(d) },
                   ]} />
                 </td>
               </tr>
@@ -152,40 +269,103 @@ function DealTable({ deals, sort, setSort }) {
   );
 }
 
-const STAGES = ["New", "Triaging", "Screening", "IC Review", "Pursuing", "Passed"];
-function KanbanBoard({ deals }) {
+/* ---------- Email → status automation drawer ---------- */
+function EmailAutomationDrawer({ onClose }) {
   const ctx = useContext(AppCtx);
+  const db = window.DB;
+  const [applied, setApplied] = useState({});
+  const isApplied = (eid, i, base) => applied[eid + ":" + i] !== undefined ? applied[eid + ":" + i] : base;
   return (
-    <div className="scroll" style={{ overflowX: "auto", paddingBottom: 8 }}>
-      <div style={{ display: "flex", gap: 12, minWidth: "min-content" }}>
-        {STAGES.map((stage) => {
-          const items = deals.filter((d) => d.status === stage);
-          return (
-            <div key={stage} style={{ width: 232, flex: "none" }}>
-              <div className="row between center" style={{ padding: "0 4px 10px" }}>
-                <div className="row gap-6 center"><StatusPill status={stage} dot={true} /><span className="num" style={{ fontSize: 11, color: "var(--text-muted)", fontWeight: 600 }}>{items.length}</span></div>
-              </div>
-              <div className="col gap-8" style={{ background: "var(--bg-sunken)", borderRadius: 10, padding: 8, minHeight: 120 }}>
-                {items.map((d) => (
-                  <div key={d.id} className="card card-hover pointer" style={{ padding: 11 }} onClick={() => ctx.navigate("workspace", { id: d.id })}>
-                    <div className="row gap-8 center mb-8">
-                      <LogoTile initials={d.initials} sector={d.sector} size={26} />
-                      <span style={{ fontWeight: 560, fontSize: 12.5 }} className="truncate">{d.name}</span>
-                    </div>
-                    <p className="t-small" style={{ lineHeight: 1.4, marginBottom: 9, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{d.take}</p>
-                    <div className="row between center">
-                      <span className="tag" style={{ fontSize: 10 }}>{d.sub}</span>
-                      <FitBar score={d.fit} />
-                    </div>
-                  </div>
-                ))}
-                {items.length === 0 && <div style={{ textAlign: "center", padding: "16px 0", color: "var(--gray-400)", fontSize: 11.5 }}>Empty</div>}
-              </div>
-            </div>
-          );
-        })}
+    <Drawer onClose={onClose}>
+      <div className="modal-head">
+        <div>
+          <div className="row gap-8 center mb-4"><span style={{ width: 28, height: 28, borderRadius: 8, background: "var(--blue-50)", color: "var(--blue-600)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="mail" size={15} /></span><h2 className="t-h2">Email → Status</h2></div>
+          <p className="t-body">The AI read these emails and the "next steps" tables inside them.</p>
+        </div>
+        <button className="x-btn" onClick={onClose}><Icon name="x" size={18} /></button>
       </div>
-    </div>
+      <div className="modal-body scroll" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {db.inbox.map((e) => (
+          <div key={e.id} className="card card-pad">
+            <div className="row gap-10 center mb-8">
+              <span className="feed-ic" style={{ background: "var(--bg-sunken)", color: "var(--text-secondary)" }}><Icon name="mail" size={14} /></span>
+              <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 12.5, fontWeight: 560 }} className="truncate">{e.subject}</div><div className="t-small">{e.from} · {e.time}</div></div>
+            </div>
+            <p className="t-small" style={{ fontStyle: "italic", marginBottom: 10 }}>"{e.preview}"</p>
+            <div className="label mb-8">Detected next steps</div>
+            <div className="col gap-8">
+              {e.updates.map((u, i) => {
+                const deal = db.dealById(u.deal);
+                const on = isApplied(e.id, i, u.applied);
+                return (
+                  <div key={i} className="card" style={{ padding: 11, background: "var(--bg-subtle)" }}>
+                    <div className="row between center mb-4">
+                      <span style={{ fontWeight: 540, fontSize: 12.5 }}>{deal ? deal.name : u.deal}</span>
+                      {u.from !== u.to
+                        ? <span className="row gap-5 center t-small"><StatusPill status={u.from} dot={false} /><Icon name="arrowRight" size={12} style={{ color: "var(--text-muted)" }} /><StatusPill status={u.to} dot={false} /></span>
+                        : <span className="tag">No status change</span>}
+                    </div>
+                    <div className="t-small" style={{ marginBottom: 8 }}>{u.step}</div>
+                    {on
+                      ? <span className="row gap-5 center" style={{ color: "var(--green-600)", fontSize: 11.5, fontWeight: 560 }}><Icon name="checkCircle" size={13} /> Applied automatically</span>
+                      : <button className="btn btn-secondary btn-sm" onClick={() => { setApplied((p) => ({ ...p, [e.id + ":" + i]: true })); ctx.toast("Applied — " + (deal ? deal.name : u.deal) + " updated", "check"); }}><Icon name="check" size={12} /> Apply update</button>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="modal-foot"><button className="btn btn-secondary" onClick={onClose}>Close</button><button className="btn btn-primary" onClick={() => { onClose(); ctx.toast("All email updates applied", "check"); }}><Icon name="check" size={14} /> Apply all</button></div>
+    </Drawer>
+  );
+}
+
+/* ---------- Excel tracker import ---------- */
+function ExcelImportModal({ onClose }) {
+  const ctx = useContext(AppCtx);
+  const cols = [
+    { x: "Company", to: "Name", ok: true },
+    { x: "Sector", to: "Sector", ok: true },
+    { x: "Banker", to: "Source", ok: true },
+    { x: "Rev ($m)", to: "Revenue", ok: true },
+    { x: "EBITDA", to: "EBITDA", ok: true },
+    { x: "Stage", to: "Status", ok: true },
+    { x: "Notes", to: "Next step / note", ok: true },
+  ];
+  return (
+    <Modal onClose={onClose} size="modal-lg">
+      <div className="modal-head">
+        <div><h2 className="t-h2">Import Excel tracker</h2><p className="t-body">We detected your existing tracker. Columns are auto-mapped — review and import.</p></div>
+        <button className="x-btn" onClick={onClose}><Icon name="x" size={18} /></button>
+      </div>
+      <div className="modal-body">
+        <div className="card" style={{ padding: 12, display: "flex", alignItems: "center", gap: 12, marginBottom: 16, borderColor: "var(--green-100)", background: "var(--green-50)" }}>
+          <span style={{ width: 30, height: 30, borderRadius: 7, background: "#fff", color: "var(--green-600)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="table" size={15} /></span>
+          <div style={{ flex: 1 }}><div style={{ fontSize: 12.5, fontWeight: 540 }}>Paragon_Pipeline_Tracker.xlsx</div><div className="t-small">1,240 rows · 18 columns detected</div></div>
+          <span className="pill pill-ready"><span className="dot"></span>Parsed</span>
+        </div>
+        <div className="label mb-8">Column mapping</div>
+        <div className="card" style={{ overflow: "hidden" }}>
+          <table className="dtable" style={{ fontSize: 12.5 }}>
+            <thead><tr><th>Excel column</th><th>Maps to</th><th>Status</th></tr></thead>
+            <tbody>
+              {cols.map((c) => (
+                <tr key={c.x} style={{ cursor: "default" }}>
+                  <td className="mono" style={{ fontSize: 12 }}>{c.x}</td>
+                  <td style={{ fontWeight: 540 }}>{c.to}</td>
+                  <td><span className="row gap-5 center" style={{ color: "var(--green-600)" }}><Icon name="check" size={13} /> Mapped</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div className="modal-foot">
+        <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
+        <button className="btn btn-primary" onClick={() => { onClose(); ctx.toast("Imported 1,240 rows into the pipeline", "check"); }}><Icon name="upload" size={14} /> Import 1,240 rows</button>
+      </div>
+    </Modal>
   );
 }
 
@@ -203,6 +383,7 @@ function WeeklyReview({ deals }) {
           <span className="t-small">Monday triage · batching {deals.length} new deals into minutes, not hours.</span>
         </div>
         <div className="row gap-8 center">
+          <button className="btn btn-secondary btn-sm" onClick={() => ctx.toast("Weekly pipeline PDF generated & sent to the team", "check")}><Icon name="download" size={13} /> Weekly PDF</button>
           <span className="num t-small">{idx + 1} / {deals.length}</span>
           <button className="btn btn-icon btn-secondary btn-sm" disabled={idx === 0} onClick={() => setIdx((i) => Math.max(0, i - 1))}><Icon name="chevLeft" size={15} /></button>
           <button className="btn btn-icon btn-secondary btn-sm" disabled={idx === deals.length - 1} onClick={() => setIdx((i) => Math.min(deals.length - 1, i + 1))}><Icon name="chevRight" size={15} /></button>
@@ -237,7 +418,7 @@ function WeeklyReview({ deals }) {
             <div className="card-pad" style={{ marginTop: 12, background: "var(--bg-subtle)", borderRadius: 10, border: "1px solid var(--border)" }}>
               <div className="row gap-7 center mb-8"><Icon name="mail" size={13} style={{ color: "var(--text-muted)" }} /><span className="label">Banker email context</span></div>
               <p style={{ fontSize: 12.5, lineHeight: 1.55, color: "var(--text-secondary)", fontStyle: "italic" }}>
-                “{d.source} reaching out on a proprietary basis ahead of broad launch. Management open to a partnership structure. First-round bids targeted for early Q3. Happy to set up a call.”
+                "{d.source} reaching out on a proprietary basis ahead of broad launch. Management open to a partnership structure. First-round bids targeted for early Q3. Happy to set up a call."
               </p>
             </div>
           </div>

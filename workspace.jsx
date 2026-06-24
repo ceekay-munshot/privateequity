@@ -5,7 +5,7 @@ function WorkspaceView({ params }) {
   const ctx = useContext(AppCtx);
   const db = window.DB;
   const d = db.dealById((params && params.id) || "meridian") || db.deals[0];
-  const [tab, setTab] = useState("tear");
+  const [tab, setTab] = useState((params && params.tab) || "tear");
   const [analysisOpen, setAnalysisOpen] = useState(true);
   const [exploreSeed, setExploreSeed] = useState(null);
   const openExplore = (topic) => { setExploreSeed(topic + "\u0000" + Date.now()); setTab("explore"); };
@@ -103,18 +103,31 @@ function TearSheet({ d, onExplore }) {
               <span className="row gap-5 center t-small"><Icon name="layers" size={13} style={{ color: "var(--text-muted)" }} /> {d.sector} · {d.sub}</span>
             </div>
           </div>
-          <div className="row gap-4 center">
-            {["external", "linkedin", "info", "bookmark", "download"].map((ic) => (
-              <button key={ic} className="btn btn-icon btn-secondary btn-sm tip" onClick={() => ic === "download" ? ctx.navigate("memos") : ctx.toast("Opening " + ic, "")}>
-                <Icon name={ic} size={14} />
-              </button>
-            ))}
+          <div className="row gap-8 center">
+            <button className="btn btn-primary btn-sm nowrap" onClick={() => ctx.toast("Drafting screening memo from the IM + emails using your house template…", "ai")}><Icon name="sparkles" size={13} /> Screening memo</button>
+            <div className="row gap-4 center">
+              {["external", "linkedin", "bookmark", "download"].map((ic) => (
+                <button key={ic} className="btn btn-icon btn-secondary btn-sm tip" onClick={() => ic === "download" ? ctx.navigate("memos") : ctx.toast("Opening " + ic, "")}>
+                  <Icon name={ic} size={14} />
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         <div className="col gap-16">
+          {/* Next Steps & Actionables */}
+          <ActionablesCard d={d} />
+
           {/* Company Overview */}
-          <SectionCard title="Company Overview" icon="building" iconColor="#2f6bff">
+          <SectionCard title="Company Overview" icon="building" iconColor="#2f6bff"
+            actions={<span className="tag" title="Profile enriched from external data"><Icon name="sparkles" size={10} /> Enriched</span>}>
+            <div className="row gap-6 wrap" style={{ marginBottom: 14 }}>
+              <span className="t-small text-muted">Enriched by:</span>
+              <span className="tag">PitchBook comps</span>
+              <span className="tag">Broker research</span>
+              <span className="tag">EU alt-data</span>
+            </div>
             <div className="kv-grid">
               <KV k="Description"><span style={{ fontWeight: 440, fontSize: 13 }}>{d.desc}</span></KV>
               <KV k="Headquarters">{d.hq}</KV>
@@ -237,6 +250,59 @@ function TearSheet({ d, onExplore }) {
   );
 }
 
+const ACTION_ICON = { call: "calendar", note: "fileText", task: "check" };
+function ActionablesCard({ d }) {
+  const ctx = useContext(AppCtx);
+  const [items, setItems] = useState(window.DB.actionsFor(d.id));
+  const [adding, setAdding] = useState(false);
+  const [type, setType] = useState("call");
+  const [text, setText] = useState("");
+  const toggle = (id) => setItems((xs) => xs.map((a) => a.id === id ? { ...a, done: !a.done } : a));
+  const add = () => {
+    if (!text.trim()) return;
+    setItems((xs) => [...xs, { id: "n" + xs.length + Date.now(), type, text: text.trim(), due: "New", owner: "You", done: false }]);
+    ctx.toast((type === "call" ? "Call" : type === "note" ? "Note" : "Task") + " added to actionables", "check");
+    setText(""); setAdding(false);
+  };
+  const open = items.filter((a) => !a.done).length;
+  return (
+    <SectionCard title="Next Steps & Actionables" icon="check" iconColor="#16a34a"
+      actions={<span className="tag">{open} open</span>}
+      menu={[
+        { icon: "calendar", text: "Schedule banker call", onClick: () => { setType("call"); setAdding(true); } },
+        { icon: "fileText", text: "Add pipeline note", onClick: () => { setType("note"); setAdding(true); } },
+        { icon: "check", text: "Add task", onClick: () => { setType("task"); setAdding(true); } },
+      ]}>
+      {items.length === 0 && !adding && (
+        <p className="t-body" style={{ marginBottom: 12 }}>No next steps yet. Record what came out of your last discussion — a banker call, a note from the pipeline meeting, or a task.</p>
+      )}
+      <div className="col gap-8">
+        {items.map((a) => (
+          <div key={a.id} className="row gap-10 center" style={{ padding: "8px 10px", borderRadius: 8, border: "1px solid var(--border)", background: a.done ? "var(--bg-subtle)" : "#fff" }}>
+            <span className="conf-dot" style={{ width: 18, height: 18, borderRadius: 6, display: "inline-flex", alignItems: "center", justifyContent: "center", background: a.done ? "var(--green-500)" : "var(--bg-sunken)", color: a.done ? "#fff" : "var(--text-muted)", cursor: "pointer" }} onClick={() => toggle(a.id)}>{a.done ? <Icon name="check" size={11} /> : <Icon name={ACTION_ICON[a.type]} size={11} />}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 500, textDecoration: a.done ? "line-through" : "none", color: a.done ? "var(--text-muted)" : "var(--text-primary)" }}>{a.text}</div>
+              <div className="t-small">{a.owner} · {a.due}</div>
+            </div>
+            <span className="tag" style={{ fontSize: 10, textTransform: "capitalize" }}>{a.type}</span>
+          </div>
+        ))}
+      </div>
+      {adding ? (
+        <div className="row gap-8 center mt-12">
+          <select className="select" style={{ width: 110, height: 34 }} value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="call">Call</option><option value="note">Note</option><option value="task">Task</option>
+          </select>
+          <input className="input" style={{ height: 34 }} autoFocus value={text} placeholder="e.g. Banker call with Jefferies, Thu 2pm" onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") add(); if (e.key === "Escape") setAdding(false); }} />
+          <button className="btn btn-primary btn-sm" onClick={add}>Add</button>
+        </div>
+      ) : (
+        <button className="btn btn-secondary btn-sm" style={{ marginTop: 12 }} onClick={() => setAdding(true)}><Icon name="plus" size={13} /> Add next step</button>
+      )}
+    </SectionCard>
+  );
+}
+
 function RailBtn({ icon, label, badge, onClick }) {
   return (
     <div className="row between center pointer" style={{ padding: "7px 9px", borderRadius: 8, fontSize: 12.5, border: "1px solid var(--border)" }} onClick={onClick}
@@ -332,10 +398,38 @@ function ExplorePanel({ d }) {
   return <window.QueryBuilder embedded={true} />;
 }
 function SettingsPanel({ d }) {
+  const ctx = useContext(AppCtx);
+  const db = window.DB;
+  const [restrict, setRestrict] = useState(true);
   return (
-    <div className="empty-state">
-      <span className="empty-ic"><Icon name="settings" size={26} /></span>
-      <div><div className="t-h2">Deal settings</div><p className="t-body" style={{ maxWidth: 360, margin: "6px auto 0" }}>Configure access, team members, refresh cadence and export defaults for {d.name}.</p></div>
+    <div style={{ maxWidth: 820 }}>
+      <div className="row between center mb-16">
+        <div><h1 className="t-h1">Deal settings</h1><div className="t-small">Access, team and export defaults for {d.name}.</div></div>
+      </div>
+      <div className="card card-pad mb-16">
+        <div className="row between center">
+          <div><div className="t-h3">Restrict this deal by role</div><p className="t-small" style={{ marginTop: 3 }}>{restrict ? "Only assigned members and partners can open this deal." : "Everyone in the firm can see this deal."}</p></div>
+          <div className={"toggle" + (restrict ? " on" : "")} onClick={() => { setRestrict((r) => !r); ctx.toast(restrict ? "Deal now visible to everyone" : "Deal restricted to the team", "check"); }}></div>
+        </div>
+      </div>
+      <div className="row between center mb-8"><span className="label">Deal team</span><button className="btn btn-secondary btn-sm" onClick={() => ctx.toast("Member added to deal", "check")}><Icon name="plus" size={13} /> Add member</button></div>
+      <div className="card" style={{ overflow: "hidden", marginBottom: 16 }}>
+        {db.team.slice(0, 4).map((m, i) => (
+          <div key={m.name} className="row between center" style={{ padding: "11px 16px", borderBottom: i < 3 ? "1px solid var(--border)" : "none" }}>
+            <div className="row gap-11 center"><Avatar name={m.name} color={m.av} /><div><div style={{ fontWeight: 540, fontSize: 13 }}>{m.name}</div><div className="t-small">{m.scope}</div></div></div>
+            <span className="pill pill-neutral">{m.role}</span>
+          </div>
+        ))}
+      </div>
+      <div className="card card-pad">
+        <div className="col gap-12">
+          <div className="row between center"><span className="t-small">Auto-refresh metrics when new data arrives</span><div className="toggle on"></div></div>
+          <div className="divider"></div>
+          <div className="row between center"><span className="t-small">Default export</span><span className="tag">Paragon IC Memo v3</span></div>
+          <div className="divider"></div>
+          <div className="row between center"><span className="t-small">Manage who sees what, firm-wide</span><button className="btn btn-secondary btn-sm" onClick={() => ctx.navigate("settings")}>Open Access Control <Icon name="arrowRight" size={12} /></button></div>
+        </div>
+      </div>
     </div>
   );
 }

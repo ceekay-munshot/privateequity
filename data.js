@@ -155,40 +155,6 @@
       ebitdaYoY: 41,
     },
     {
-      id: "atlas",
-      name: "Atlas Renewable Fund III",
-      initials: "AR",
-      sector: "Energy",
-      sub: "Renewables",
-      desc: "Mid-market solar & storage infrastructure fund, primary commitment.",
-      source: "Campbell Lutyens",
-      sourceType: "Placement agent",
-      received: "2026-06-08",
-      revenue: null,
-      ebitda: null,
-      ask: 150,
-      fit: 72,
-      status: "New",
-      strategy: "Fund Primary",
-      dealType: "Fund",
-      stage: "New",
-      geo: "Madrid, ES",
-      hq: "Madrid, Spain",
-      website: "atlasrenewable.com",
-      employees: 64,
-      founded: 2011,
-      regions: "EU, LATAM",
-      take: "Proven Fund I/II DPI; Fund III strategy drift into storage needs underwriting.",
-      thesis:
-        "Atlas has delivered 1.9x DPI on Fund I and a 2.3x TVPI on Fund II. Fund III expands into co-located storage, which broadens the opportunity set but introduces merchant-price risk. We are evaluating a $150M primary commitment with co-investment rights. Diligence centers on the storage underwriting and team retention post-fundraise.",
-      isNew: false,
-      ownership: null,
-      preMoney: null,
-      postMoney: null,
-      revYoY: null,
-      ebitdaYoY: null,
-    },
-    {
       id: "vantage",
       name: "Vantage Payments",
       initials: "VP",
@@ -221,6 +187,8 @@
       postMoney: 820,
       revYoY: 61,
       ebitdaYoY: null,
+      passReason: "Valuation discipline — 7.5x revenue too rich vs. burn",
+      passedDate: "2026-06-09",
     },
     {
       id: "harborstone",
@@ -290,6 +258,78 @@
       revYoY: 21,
       ebitdaYoY: 26,
     },
+    {
+      id: "brightline",
+      name: "Brightline Robotics",
+      initials: "BR",
+      sector: "Industrials",
+      sub: "Warehouse Automation",
+      desc: "Autonomous mobile robots for mid-market warehouse fulfillment.",
+      source: "Lincoln International",
+      sourceType: "Sell-side bank",
+      received: "2026-05-22",
+      revenue: 58.0,
+      ebitda: 3.1,
+      ask: 410,
+      fit: 58,
+      status: "Passed",
+      strategy: "PE Direct",
+      dealType: "Company",
+      stage: "Passed",
+      geo: "Pittsburgh, PA",
+      hq: "Pittsburgh, Pennsylvania, USA",
+      website: "brightlinerobotics.com",
+      employees: 240,
+      founded: 2017,
+      regions: "North America",
+      take: "Hardware margins and a crowded ARM field; capital intensity didn't fit the thesis.",
+      thesis:
+        "Brightline has solid technology but competes in a crowded autonomous-mobile-robot field with hardware-level gross margins. The capital intensity and limited software attach didn't fit our asset-light thesis. Passed after first screen.",
+      isNew: false,
+      ownership: null,
+      preMoney: 390,
+      postMoney: null,
+      revYoY: 44,
+      ebitdaYoY: null,
+      passReason: "Capital intensity & crowded ARM field; off-thesis",
+      passedDate: "2026-05-28",
+    },
+    {
+      id: "cedarmark",
+      name: "Cedarmark Dental",
+      initials: "CD",
+      sector: "Healthcare",
+      sub: "Dental Services (DSO)",
+      desc: "Multi-state dental support organization rolling up suburban practices.",
+      source: "Provident",
+      sourceType: "Sell-side bank",
+      received: "2026-05-15",
+      revenue: 132.0,
+      ebitda: 18.4,
+      ask: 295,
+      fit: 61,
+      status: "Passed",
+      strategy: "PE Direct",
+      dealType: "Company",
+      stage: "Passed",
+      geo: "Columbus, OH",
+      hq: "Columbus, Ohio, USA",
+      website: "cedarmarkdental.com",
+      employees: 1120,
+      founded: 2013,
+      regions: "North America",
+      take: "Integration risk across 40 acquired practices; same-store growth flat.",
+      thesis:
+        "Cedarmark is a sizeable DSO but same-store growth has gone flat and integration debt is high across 40+ acquired practices. We've seen the DSO playbook compress at exit. Passed at IC pre-read.",
+      isNew: false,
+      ownership: null,
+      preMoney: 280,
+      postMoney: null,
+      revYoY: 11,
+      ebitdaYoY: 7,
+      passReason: "Flat same-store growth; DSO multiple compression risk",
+      passedDate: "2026-05-20",
+    },
   ];
 
   // financial statements for a deal (Meridian) — used in tear sheet
@@ -350,8 +390,8 @@
     { type: "file", deal: "Northwind Logistics", name: "Uploaded Q1-2026 Management Accounts.xlsx", user: "Sofia Reyes", color: "#2f6bff", time: "44m ago" },
     { type: "flag", deal: "Lumen Skincare", name: "CAC trend flagged — needs review", user: "Critic AI", color: "#e08a00", time: "1h ago" },
     { type: "analysis", deal: "Cobalt Cloud", name: "Created 'Investment Returns' analysis", user: "David Kim", color: "#16a34a", time: "2h ago" },
-    { type: "deal", deal: "Atlas Renewable Fund III", name: "New deal ingested from email", user: "Auto-intake", color: "#2f6bff", time: "3h ago" },
-    { type: "section", deal: "Silverpeak Diagnostics", name: "Verified 'Reimbursement Mix' metrics", user: "You", color: "#16a34a", time: "5h ago" },
+    { type: "status", deal: "Northwind Logistics", name: "Auto-moved Screening → IC Review from banker email", user: "Email automation", color: "#2f6bff", time: "3h ago" },
+    { type: "deal", deal: "Silverpeak Diagnostics", name: "New deal ingested from deals@paragon.com", user: "Auto-intake", color: "#2f6bff", time: "5h ago" },
   ];
 
   // ---- PORTFOLIO ----
@@ -414,6 +454,7 @@
     { id: "consumer", name: "Consumer & Personal Care", signals: 9, fresh: "22m ago", color: "#e08a00", note: "D2C velocity, quick-commerce shift" },
     { id: "industrials", name: "Industrials & Supply Chain", signals: 6, fresh: "1h ago", color: "#2563eb", note: "Reshoring, freight cycle" },
     { id: "energy", name: "Energy Transition", signals: 11, fresh: "34m ago", color: "#0e9488", note: "Storage economics, grid policy" },
+    { id: "insurance", name: "Insurance & Specialty Risk", signals: 7, fresh: "12m ago", color: "#be123c", note: "Analyst coverage, comps & cap tables", memory: true },
   ];
 
   const briefing = {
@@ -426,7 +467,62 @@
       { topic: "Channel Shift", title: "Quick-commerce now 18% of urban personal-care volume; modern trade decelerating", sources: ["NielsenIQ", "Broker note", "Company calls"], count: 5, date: "Today, 8:05 AM", sentiment: "neutral", summary: "Quick-commerce continues to take share in metros, compressing the discovery advantage of legacy brands. Velocity data shows challenger brands over-indexing on these platforms." },
       { topic: "Funding", title: "Clinical-skincare challenger raises Series C at 6x forward revenue", sources: ["TechCrunch", "Cap-table data"], count: 2, date: "Today, 6:30 AM", sentiment: "opportunity", summary: "Validates the clinical-efficacy positioning thesis and sets a private comp directly relevant to the Lumen Skincare diligence." },
     ],
+    insurance: [
+      { topic: "Regulation", title: "Regulator raises minimum solvency margin for specialty MGAs", sources: ["Regulator notice", "Broker note"], count: 4, date: "Today, 8:40 AM", sentiment: "neutral", summary: "Higher capital requirements pressure sub-scale MGAs and create consolidation opportunities. Two names on our specialty-risk watchlist would be natural acquirers." },
+      { topic: "M&A", title: "Specialty insurer acquired at 1.9x book / 11x earnings", sources: ["Bloomberg", "Press release"], count: 3, date: "Yesterday", sentiment: "neutral", summary: "Sets a fresh public comp at 1.9x tangible book and 11x earnings, slightly above the trailing median. Reprices our specialty-risk comp set." },
+    ],
   };
+
+  // ---- GOVERNMENT TENDERS / POLICY TRACKER ----
+  const tenders = [
+    { title: "State procurement — oncology biosimilars", body: "Ministry of Health", value: "$120M", closes: "21 days", status: "Open", sector: "pharma" },
+    { title: "Grid-scale storage capacity auction (Round 4)", body: "National Energy Authority", value: "$340M", closes: "9 days", status: "Open", sector: "energy" },
+    { title: "Defense precision-components framework", body: "Dept. of Defense", value: "$85M", closes: "Closed", status: "Awarded", sector: "industrials" },
+    { title: "Public health diagnostics panel supply", body: "State Health Dept.", value: "$54M", closes: "33 days", status: "Open", sector: "pharma" },
+  ];
+
+  // ---- INSTITUTIONAL MEMORY (e.g. Insurance) ----
+  const institutional = {
+    insurance: {
+      coverage: [
+        { name: "Coastal Specialty Re", analyst: "Priya N.", since: "2021", note: "Covered through 2 renewal cycles", trend: "up" },
+        { name: "Meridian MGA Group", analyst: "Tom B.", since: "2022", note: "Passed in 2023; re-engaged 2026", trend: "flat" },
+        { name: "Harbor Mutual Holdings", analyst: "Priya N.", since: "2020", note: "Reference relationship w/ CFO", trend: "up" },
+      ],
+      comps: [
+        { co: "Coastal Specialty Re", pb: "1.9x", pe: "11.2x", combined: "91%", year: "2026" },
+        { co: "Harbor Mutual", pb: "1.4x", pe: "9.6x", combined: "96%", year: "2026" },
+        { co: "Sector median", pb: "1.6x", pe: "10.4x", combined: "94%", year: "2026" },
+      ],
+      capTable: [
+        { holder: "Founder & mgmt", pct: 34 },
+        { holder: "Growth equity (Series B)", pct: 28 },
+        { holder: "Strategic reinsurer", pct: 19 },
+        { holder: "ESOP / employees", pct: 12 },
+        { holder: "Other", pct: 7 },
+      ],
+      marketShare: [
+        { p: "2021", v: 6.2 }, { p: "2022", v: 7.1 }, { p: "2023", v: 7.9 },
+        { p: "2024", v: 8.6 }, { p: "2025", v: 9.4 }, { p: "2026", v: 10.3 },
+      ],
+    },
+  };
+
+  // ---- ACCESS CONTROL / PERMISSIONS ----
+  const team = [
+    { name: "Alex Chen", role: "Partner", av: "#2f6bff", scope: "All deals & sectors" },
+    { name: "Sofia Reyes", role: "Principal", av: "#16a34a", scope: "Healthcare, Industrials" },
+    { name: "David Kim", role: "Associate", av: "#e08a00", scope: "Assigned deals only" },
+    { name: "Maya Iyer", role: "Analyst", av: "#7c5cfc", scope: "Assigned deals only" },
+    { name: "Jordan Webb", role: "IC Member", av: "#be123c", scope: "Read-only · IC stage+" },
+  ];
+  const roles = [
+    { role: "Partner", deals: "All", sectors: "All", memos: "Create & approve", settings: "Manage" },
+    { role: "Principal", deals: "Sector-scoped", sectors: "Assigned", memos: "Create", settings: "View" },
+    { role: "Associate", deals: "Assigned", sectors: "Assigned", memos: "Create draft", settings: "—" },
+    { role: "Analyst", deals: "Assigned", sectors: "Assigned", memos: "Draft", settings: "—" },
+    { role: "IC Member", deals: "IC stage+", sectors: "All", memos: "Review", settings: "—" },
+  ];
 
   const drugLaunch = [
     { drug: "Onvexa", company: "Helix Bio", molecule: "Anti-IL23 mAb", price: 4820, comp: 5100, status: "Launched" },
@@ -459,13 +555,57 @@
 
   // ---- INGESTION SOURCES (settings) ----
   const ingestion = [
-    { name: "Deal Intake Inbox", detail: "deals@munshot.vc · auto-forward", icon: "mail", status: "Connected", sync: "Live" },
-    { name: "Dropbox — /Deal Flow", detail: "Folder sync · 1,204 files", icon: "folder", status: "Connected", sync: "2m ago" },
-    { name: "Google Drive — Diligence", detail: "Folder sync · 856 files", icon: "folder", status: "Connected", sync: "8m ago" },
-    { name: "WhatsApp Connector", detail: "Banker & intermediary forwards", icon: "chat", status: "Connected", sync: "14m ago" },
-    { name: "PitchBook API", detail: "Data provider · comps & multiples", icon: "api", status: "Connected", sync: "1h ago" },
-    { name: "Telegram Deal Channels", detail: "3 channels monitored", icon: "chat", status: "Paused", sync: "—" },
+    { name: "Deal Intake Inbox", detail: "deals@paragon.com · source of truth · auto-forward", icon: "mail", status: "Connected", sync: "Live", category: "Email" },
+    { name: "Email → Status automation", detail: "AI reads 'next steps' tables and updates deal status", icon: "mail", status: "Connected", sync: "Live", category: "Email" },
+    { name: "Dropbox — /Deal Flow (private)", detail: "Folder sync · 1,204 files · private deal data", icon: "folder", status: "Connected", sync: "2m ago", category: "Documents" },
+    { name: "Google Drive — Diligence", detail: "Folder sync · 856 files", icon: "folder", status: "Connected", sync: "8m ago", category: "Documents" },
+    { name: "Excel Deal Tracker", detail: "Import / export .xlsx · 1,240 rows", icon: "table", status: "Connected", sync: "Manual", category: "Documents" },
+    { name: "WhatsApp Connector", detail: "Banker & intermediary forwards", icon: "chat", status: "Connected", sync: "14m ago", category: "Email" },
+    { name: "PitchBook API", detail: "Data provider · comps & multiples", icon: "api", status: "Connected", sync: "1h ago", category: "External data" },
+    { name: "Broker Research (Jefferies, Blair)", detail: "Paid subscriptions · research notes", icon: "api", status: "Connected", sync: "1h ago", category: "External data" },
+    { name: "Alternate Data — EU Providers", detail: "European registries & alt-data feeds", icon: "globe", status: "Connected", sync: "3h ago", category: "External data" },
+    { name: "Telegram Deal Channels", detail: "3 channels monitored", icon: "chat", status: "Paused", sync: "—", category: "Email" },
   ];
+
+  // ---- EMAIL → STATUS AUTOMATION (parsed "next steps" tables) ----
+  const inbox = [
+    {
+      id: "e1", from: "Daniel Mehta · Jefferies", subject: "RE: Meridian — process update & next steps", time: "2h ago",
+      preview: "As discussed, here are the next steps for the names we're running…",
+      updates: [
+        { deal: "meridian", from: "Screening", to: "IC Review", step: "Management call scheduled Thu — IC pre-read due Fri", applied: true },
+      ],
+    },
+    {
+      id: "e2", from: "Sofia Reyes · Internal", subject: "Pipeline meeting — actions", time: "1d ago",
+      preview: "Notes + next steps from Monday's pipeline meeting (table attached)…",
+      updates: [
+        { deal: "northwind", from: "Screening", to: "IC Review", step: "Draft IC memo; confirm freight downside case", applied: true },
+        { deal: "lumen", from: "Triaging", to: "Screening", step: "Request CAC cohort data from banker", applied: true },
+        { deal: "cobalt", from: "Screening", to: "Screening", step: "Schedule reference calls w/ 3 vet groups", applied: false },
+      ],
+    },
+  ];
+
+  // ---- ACTIONABLES / NEXT STEPS (per deal) ----
+  const actions = {
+    meridian: [
+      { id: "a1", type: "call", text: "Banker call with Jefferies (process & timeline)", due: "Thu 2:00 PM", owner: "Alex Chen", done: false },
+      { id: "a2", type: "note", text: "Pipeline meeting: top-3 IDN concentration is the key flag to underwrite", due: "Logged", owner: "You", done: true },
+      { id: "a3", type: "task", text: "Request customer cohort file (2020–2026)", due: "Tomorrow", owner: "David Kim", done: false },
+    ],
+    northwind: [
+      { id: "a1", type: "task", text: "Draft IC memo from CIM + management model", due: "Fri", owner: "Sofia Reyes", done: false },
+      { id: "a2", type: "call", text: "Expert call on freight-cycle downside", due: "Next week", owner: "Alex Chen", done: false },
+    ],
+    lumen: [
+      { id: "a1", type: "task", text: "Request CAC cohort data from Raymond James", due: "This week", owner: "You", done: false },
+      { id: "a2", type: "note", text: "Validate contribution margin at scale before screening memo", due: "Logged", owner: "You", done: false },
+    ],
+    cobalt: [
+      { id: "a1", type: "call", text: "Reference calls with 3 multi-site vet groups", due: "Next week", owner: "David Kim", done: false },
+    ],
+  };
 
   // ---- DEAL FILES ----
   const files = [
@@ -497,7 +637,12 @@
   window.DB = {
     deals, financials, people, sources, activity, portfolio, misSeries, misTimeline,
     sectors, briefing, drugLaunch, patentCliff, sentiment, sectorSources, ingestion, files, analyses, quickLinks,
+    inbox, actions, tenders, institutional, team, roles,
+    firm: "Paragon Capital", intakeEmail: "deals@paragon.com",
     SECTOR_COLOR, logoColor,
+    activeDeals: () => deals.filter((d) => d.status !== "Passed"),
+    archivedDeals: () => deals.filter((d) => d.status === "Passed"),
+    actionsFor: (id) => actions[id] || [],
     dealById: (id) => deals.find((d) => d.id === id),
     portfolioById: (id) => portfolio.find((p) => p.id === id),
   };
