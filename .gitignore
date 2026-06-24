@@ -1,0 +1,17 @@
+# Dependencies (none required — this is a buildless app)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local env
+.env
+.env.local
