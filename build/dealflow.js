@@ -12,7 +12,6 @@ function DealFlowView({
     status: "All"
   });
   const [overrides, setOverrides] = useState({});
-  const [emailOpen, setEmailOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const eff = d => overrides[d.id] || d.status;
   const move = (d, to) => {
@@ -31,7 +30,6 @@ function DealFlowView({
   deals.sort((a, b) => sort === "fit" ? b.fit - a.fit : sort === "rev" ? (b.revenue || 0) - (a.revenue || 0) : new Date(b.received) - new Date(a.received));
   const sectors = ["All", ...Object.keys(db.SECTOR_COLOR)];
   const statuses = ["All", ...STAGES];
-  const pendingEmail = db.inbox.reduce((n, e) => n + e.updates.filter(u => !u.applied).length, 0);
   return React.createElement("div", {
     className: "page page-wide"
   }, React.createElement(PageHead, {
@@ -63,51 +61,8 @@ function DealFlowView({
   }, React.createElement(Icon, {
     name: "plus",
     size: 15
-  }), " New Deal")), React.createElement("div", {
-    className: "card",
-    style: {
-      display: "flex",
-      alignItems: "center",
-      gap: 13,
-      padding: "12px 16px",
-      marginBottom: 18,
-      borderColor: "var(--blue-200)",
-      background: "linear-gradient(90deg, var(--blue-50), #fff 70%)"
-    }
-  }, React.createElement("span", {
-    className: "feed-ic",
-    style: {
-      background: "var(--blue-100)",
-      color: "var(--blue-600)"
-    }
-  }, React.createElement(Icon, {
-    name: "mail",
-    size: 15
-  })), React.createElement("div", {
-    style: {
-      flex: 1
-    }
-  }, React.createElement("span", {
-    style: {
-      fontSize: 13,
-      fontWeight: 560
-    }
-  }, pendingEmail > 0 ? pendingEmail + " status updates" : "All caught up", " from email"), React.createElement("span", {
-    className: "t-small"
-  }, " \u2014 auto-ingested from ", React.createElement("strong", {
-    style: {
-      color: "var(--text-secondary)"
-    }
-  }, db.intakeEmail), ", Dropbox sync & WhatsApp. The AI reads \"next steps\" tables and moves deals automatically.")), React.createElement("button", {
-    className: "btn btn-ghost btn-sm",
-    onClick: () => setEmailOpen(true)
-  }, "Review email updates ", pendingEmail > 0 && React.createElement("span", {
-    className: "nav-badge"
-  }, pendingEmail), " ", React.createElement(Icon, {
-    name: "arrowRight",
-    size: 13
-  }))), (view === "table" || view === "archived") && React.createElement("div", {
-    className: "row gap-8 center mb-12",
+  }), " New Deal")), (view === "table" || view === "archived") && React.createElement("div", {
+    className: "row gap-8 center mb-14",
     style: {
       justifyContent: "flex-end"
     }
@@ -241,9 +196,7 @@ function DealFlowView({
     eff: eff,
     move: move,
     logAction: logAction
-  })), emailOpen && React.createElement(EmailAutomationDrawer, {
-    onClose: () => setEmailOpen(false)
-  }), importOpen && React.createElement(ExcelImportModal, {
+  })), importOpen && React.createElement(ExcelImportModal, {
     onClose: () => setImportOpen(false)
   }));
 }
@@ -1231,4 +1184,5 @@ function fmtDate(s) {
   });
 }
 window.DealFlowView = DealFlowView;
+window.EmailAutomationDrawer = EmailAutomationDrawer;
 window.fmtDate = fmtDate;

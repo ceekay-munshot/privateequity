@@ -182,40 +182,44 @@ function TearSheet({
       alignItems: "start"
     }
   }, React.createElement("div", null, React.createElement("div", {
-    className: "row gap-16",
+    className: "row gap-14",
     style: {
       alignItems: "flex-start",
-      marginBottom: 20
+      marginBottom: 22
     }
   }, React.createElement(LogoTile, {
     initials: d.initials,
     sector: d.sector,
-    size: 54
+    size: 52
   }), React.createElement("div", {
     style: {
       flex: 1,
       minWidth: 0
     }
   }, React.createElement("div", {
-    className: "row gap-10 center",
+    className: "row gap-8 center wrap",
     style: {
-      marginBottom: 4
+      marginBottom: 6
     }
   }, React.createElement("h1", {
-    className: "t-h1"
-  }, d.name), React.createElement("span", {
-    className: "pill pill-screening"
-  }, d.strategy), React.createElement(StatusPill, {
+    className: "t-h1",
+    style: {
+      marginRight: 2
+    }
+  }, d.name), React.createElement(StatusPill, {
     status: d.status
-  })), React.createElement("p", {
+  }), React.createElement("span", {
+    className: "tag"
+  }, d.strategy)), React.createElement("p", {
     className: "t-body",
     style: {
-      marginBottom: 8
+      marginBottom: 10,
+      maxWidth: 620
     }
   }, d.desc), React.createElement("div", {
-    className: "row gap-14 center wrap"
+    className: "row gap-16 center wrap"
   }, React.createElement("span", {
-    className: "row gap-5 center t-small"
+    className: "row gap-6 center t-small"
   }, React.createElement(Icon, {
     name: "globe",
     size: 13,
@@ -223,7 +227,7 @@ function TearSheet({
       color: "var(--text-muted)"
     }
   }), " ", d.website), React.createElement("span", {
-    className: "row gap-5 center t-small"
+    className: "row gap-6 center t-small"
   }, React.createElement(Icon, {
     name: "pin",
     size: 13,
@@ -231,7 +235,7 @@ function TearSheet({
       color: "var(--text-muted)"
     }
   }), " ", d.hq), React.createElement("span", {
-    className: "row gap-5 center t-small"
+    className: "row gap-6 center t-small"
   }, React.createElement(Icon, {
     name: "layers",
     size: 13,
@@ -239,23 +243,44 @@ function TearSheet({
       color: "var(--text-muted)"
     }
   }), " ", d.sector, " \xB7 ", d.sub))), React.createElement("div", {
-    className: "row gap-8 center"
+    className: "row gap-8 center",
+    style: {
+      flex: "none"
+    }
   }, React.createElement("button", {
     className: "btn btn-primary btn-sm nowrap",
     onClick: () => ctx.toast("Drafting screening memo from the IM + emails using your house template…", "ai")
   }, React.createElement(Icon, {
     name: "sparkles",
     size: 13
-  }), " Screening memo"), React.createElement("div", {
-    className: "row gap-4 center"
-  }, ["external", "linkedin", "bookmark", "download"].map(ic => React.createElement("button", {
-    key: ic,
-    className: "btn btn-icon btn-secondary btn-sm tip",
-    onClick: () => ic === "download" ? ctx.navigate("memos") : ctx.toast("Opening " + ic, "")
-  }, React.createElement(Icon, {
-    name: ic,
-    size: 14
-  })))))), React.createElement("div", {
+  }), " Screening memo"), React.createElement(Menu, {
+    align: "right",
+    trigger: React.createElement("button", {
+      className: "btn btn-icon btn-secondary btn-sm"
+    }, React.createElement(Icon, {
+      name: "more",
+      size: 16
+    })),
+    items: [{
+      icon: "external",
+      text: "Visit website",
+      onClick: () => ctx.toast("Opening " + d.website, "")
+    }, {
+      icon: "linkedin",
+      text: "View on LinkedIn",
+      onClick: () => ctx.toast("Opening LinkedIn", "")
+    }, {
+      icon: "bookmark",
+      text: "Bookmark deal",
+      onClick: () => ctx.toast("Deal bookmarked", "check")
+    }, {
+      sep: true
+    }, {
+      icon: "download",
+      text: "Export to memo",
+      onClick: () => ctx.navigate("memos")
+    }]
+  }))), React.createElement("div", {
     className: "col gap-16"
   }, React.createElement(ActionablesCard, {
     d: d
@@ -490,80 +515,40 @@ function TearSheet({
   }, "Each opens a pre-seeded research session scoped to that topic"))), React.createElement("div", {
     className: "col",
     style: {
-      gap: 1
+      gap: 2
     }
-  }, db.quickLinks.map((q, i) => {
+  }, db.quickLinks.map(q => {
     const meta = db.quickLinkMeta[q] || {};
     const conf = meta.status === "review" ? "review" : meta.status === "stale" ? "estimated" : "verified";
-    return React.createElement("div", {
+    return React.createElement("button", {
       key: q,
-      className: "row between center pointer",
-      style: {
-        padding: "8px 9px",
-        borderRadius: 8,
-        fontSize: 12.5
-      },
-      onClick: () => onExplore(q),
-      onMouseEnter: e => e.currentTarget.style.background = "var(--gray-100)",
-      onMouseLeave: e => e.currentTarget.style.background = "transparent"
+      className: "ql-item",
+      onClick: () => onExplore(q)
     }, React.createElement("span", {
-      className: "row gap-9 center",
-      style: {
-        minWidth: 0
-      }
+      className: "ql-dot conf-" + conf
+    }), React.createElement("span", {
+      className: "ql-main"
     }, React.createElement("span", {
-      style: {
-        width: 22,
-        height: 22,
-        borderRadius: 6,
-        background: "var(--violet-50)",
-        color: "var(--violet-500)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        flex: "none"
-      }
-    }, React.createElement(Icon, {
-      name: "chat",
-      size: 12
-    })), React.createElement("span", {
-      style: {
-        minWidth: 0
-      }
-    }, React.createElement("span", {
-      className: "truncate",
-      style: {
-        display: "block"
-      }
+      className: "ql-title"
     }, q), React.createElement("span", {
-      className: "t-small row gap-5 center",
-      style: {
-        marginTop: 1
-      }
-    }, React.createElement(ConfDot, {
-      level: conf
-    }), meta.fresh || "Not yet run"))), React.createElement(Icon, {
+      className: "ql-meta"
+    }, meta.fresh || "Not yet run")), React.createElement(Icon, {
       name: "arrowRight",
-      size: 13,
-      style: {
-        color: "var(--gray-300)",
-        flex: "none"
-      }
+      size: 14,
+      className: "ql-arrow"
     }));
-  }), React.createElement("div", {
-    className: "row gap-8 center pointer",
+  })), React.createElement("button", {
+    className: "btn btn-secondary btn-sm",
     style: {
-      padding: "8px 9px",
-      borderRadius: 8,
-      fontSize: 12,
-      color: "var(--blue-600)",
-      fontWeight: 540
+      width: "100%",
+      justifyContent: "center",
+      marginTop: 10
     },
     onClick: () => ctx.toast("Save the current Explore query to Quick Links", "")
   }, React.createElement(Icon, {
     name: "plus",
     size: 13
-  }), " Save a Q&A query"))), React.createElement("div", {
+  }), " Save a Q&A query")), React.createElement("div", {
     className: "card card-pad rail-panel"
   }, React.createElement("div", {
     className: "rail-panel-head"

@@ -12,7 +12,6 @@ function DealFlowView({ params }) {
   const [sort, setSort] = useState("fit");
   const [filters, setFilters] = useState({ sector: "All", minFit: 0, status: "All" });
   const [overrides, setOverrides] = useState({});
-  const [emailOpen, setEmailOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
 
   const eff = (d) => overrides[d.id] || d.status;
@@ -28,7 +27,6 @@ function DealFlowView({ params }) {
 
   const sectors = ["All", ...Object.keys(db.SECTOR_COLOR)];
   const statuses = ["All", ...STAGES];
-  const pendingEmail = db.inbox.reduce((n, e) => n + e.updates.filter((u) => !u.applied).length, 0);
 
   return (
     <div className="page page-wide">
@@ -42,19 +40,9 @@ function DealFlowView({ params }) {
         <button className="btn btn-primary" onClick={() => ctx.openWizard()}><Icon name="plus" size={15} /> New Deal</button>
       </PageHead>
 
-      {/* live ingestion + email automation banner */}
-      <div className="card" style={{ display: "flex", alignItems: "center", gap: 13, padding: "12px 16px", marginBottom: 18, borderColor: "var(--blue-200)", background: "linear-gradient(90deg, var(--blue-50), #fff 70%)" }}>
-        <span className="feed-ic" style={{ background: "var(--blue-100)", color: "var(--blue-600)" }}><Icon name="mail" size={15} /></span>
-        <div style={{ flex: 1 }}>
-          <span style={{ fontSize: 13, fontWeight: 560 }}>{pendingEmail > 0 ? pendingEmail + " status updates" : "All caught up"} from email</span>
-          <span className="t-small"> — auto-ingested from <strong style={{ color: "var(--text-secondary)" }}>{db.intakeEmail}</strong>, Dropbox sync & WhatsApp. The AI reads "next steps" tables and moves deals automatically.</span>
-        </div>
-        <button className="btn btn-ghost btn-sm" onClick={() => setEmailOpen(true)}>Review email updates {pendingEmail > 0 && <span className="nav-badge">{pendingEmail}</span>} <Icon name="arrowRight" size={13} /></button>
-      </div>
-
       {/* toolbar: excel import/export */}
       {(view === "table" || view === "archived") && (
-        <div className="row gap-8 center mb-12" style={{ justifyContent: "flex-end" }}>
+        <div className="row gap-8 center mb-14" style={{ justifyContent: "flex-end" }}>
           <span className="t-small" style={{ marginRight: "auto" }}>{view === "archived" ? archived.length + " archived" : deals.length + " active deals"}</span>
           <button className="btn btn-secondary btn-sm" onClick={() => setImportOpen(true)}><Icon name="upload" size={13} /> Import Excel</button>
           <button className="btn btn-secondary btn-sm" onClick={() => ctx.toast("Exporting " + (view === "archived" ? archived.length : deals.length) + " rows to Paragon_Pipeline.xlsx", "check")}><Icon name="download" size={13} /> Export Excel</button>
@@ -95,7 +83,6 @@ function DealFlowView({ params }) {
         </div>
       )}
 
-      {emailOpen && <EmailAutomationDrawer onClose={() => setEmailOpen(false)} />}
       {importOpen && <ExcelImportModal onClose={() => setImportOpen(false)} />}
     </div>
   );
@@ -486,4 +473,5 @@ function fmtDate(s) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 window.DealFlowView = DealFlowView;
+window.EmailAutomationDrawer = EmailAutomationDrawer;
 window.fmtDate = fmtDate;

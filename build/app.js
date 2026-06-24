@@ -14,6 +14,10 @@ const NAV = [{
     label: "Deal Flow",
     icon: "dealflow",
     badge: "6"
+  }, {
+    id: "notifications",
+    label: "Notifications",
+    icon: "bell"
   }]
 }, {
   section: "Intelligence",
@@ -49,6 +53,7 @@ const NAV = [{
 const VIEW_TITLES = {
   home: "Home",
   dealflow: "Deal Flow",
+  notifications: "Notifications",
   sector: "Sector Intelligence",
   explore: "Explore",
   documents: "Documents",
@@ -72,7 +77,18 @@ function App() {
   const [source, setSource] = uS(null);
   const [fileFilters, setFileFilters] = uS(null);
   const [editSection, setEditSection] = uS(null);
+  const [emailAuto, setEmailAuto] = uS(false);
+  const [notifRead, setNotifRead] = uS({});
   const [toasts, setToasts] = uS([]);
+  const markNotifRead = uC(id => setNotifRead(r => ({
+    ...r,
+    [id]: true
+  })), []);
+  const markAllNotif = uC(() => setNotifRead(() => {
+    const o = {};
+    window.DB.notifications.forEach(n => o[n.id] = true);
+    return o;
+  }), []);
   const navigate = uC((view, params = {}) => {
     setRoute({
       view,
@@ -115,7 +131,11 @@ function App() {
       value
     }),
     openFileFilters: cfg => setFileFilters(cfg || {}),
-    openEditSection: s => setEditSection(s || {})
+    openEditSection: s => setEditSection(s || {}),
+    openEmailAutomation: () => setEmailAuto(true),
+    notifRead,
+    markNotifRead,
+    markAllNotif
   };
   const crumbs = (() => {
     const v = route.view;
@@ -145,6 +165,7 @@ function App() {
     }];
   })();
   const activeNav = route.view === "workspace" ? "dealflow" : route.view === "sectorco" ? "sector" : route.view;
+  const unread = window.DB.notifications.filter(n => n.unread && !notifRead[n.id]).length;
   const renderView = () => {
     switch (route.view) {
       case "home":
@@ -167,6 +188,8 @@ function App() {
         return React.createElement(window.ExploreLanding, {
           params: route.params
         });
+      case "notifications":
+        return React.createElement(window.NotificationsView, null);
       case "documents":
         return React.createElement(window.DocumentsView, {
           params: route.params
@@ -242,7 +265,9 @@ function App() {
   }, React.createElement(Icon, {
     name: it.icon,
     size: 17
-  }), React.createElement("span", null, it.label), it.badge && React.createElement("span", {
+  }), React.createElement("span", null, it.label), it.id === "notifications" ? unread > 0 && React.createElement("span", {
+    className: "nav-badge red"
+  }, unread) : it.badge && React.createElement("span", {
     className: "nav-badge" + (it.amber ? " amber" : "")
   }, it.badge)))))), React.createElement("div", {
     className: "sb-foot"
@@ -303,15 +328,7 @@ function App() {
     }
   }, "Type @ to jump to a deal, company or sector\u2026"), React.createElement("span", {
     className: "kbd"
-  }, "\u2318K")), React.createElement("button", {
-    className: "btn btn-icon btn-ghost tip",
-    onClick: () => toast("3 new alerts: 1 tender, 2 deals", "")
-  }, React.createElement(Icon, {
-    name: "bell",
-    size: 18
-  }), React.createElement("span", {
-    className: "tip-bub"
-  }, "Notifications")), React.createElement(Menu, {
+  }, "\u2318K")), React.createElement(window.NotificationBell, null), React.createElement(Menu, {
     align: "right",
     trigger: React.createElement("button", {
       className: "btn btn-primary btn-sm"
@@ -359,6 +376,8 @@ function App() {
   }), editSection && React.createElement(window.EditSectionModal, {
     section: editSection,
     onClose: () => setEditSection(null)
+  }), emailAuto && React.createElement(window.EmailAutomationDrawer, {
+    onClose: () => setEmailAuto(false)
   }), React.createElement("div", {
     className: "toast-wrap"
   }, toasts.map(t => React.createElement("div", {

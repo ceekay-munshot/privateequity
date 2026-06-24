@@ -524,6 +524,17 @@
     { role: "IC Member", deals: "IC stage+", sectors: "All", memos: "Review", settings: "—" },
   ];
 
+  // ---- NOTIFICATIONS (unified inbox: bell + sidebar hub) ----
+  const notifications = [
+    { id: "n1", kind: "email", title: "Email moved Northwind to IC Review", detail: "Banker email \"next steps\" table parsed — Screening → IC Review.", time: "2h ago", unread: true, action: "email" },
+    { id: "n2", kind: "flag", title: "Critic AI flagged a metric", detail: "Lumen Skincare — CAC trend needs review before screening.", time: "1h ago", unread: true, action: "deal:lumen" },
+    { id: "n3", kind: "deal", title: "New deal ingested", detail: "Silverpeak Diagnostics arrived via deals@paragon.com.", time: "5h ago", unread: true, action: "deal:silverpeak" },
+    { id: "n4", kind: "alert", title: "New government tender", detail: "Oncology biosimilars procurement — closes in 21 days.", time: "3h ago", unread: false, action: "sector:pharma" },
+    { id: "n5", kind: "email", title: "Pipeline meeting actions applied", detail: "3 status updates detected from Monday's pipeline email.", time: "1d ago", unread: false, action: "email" },
+    { id: "n6", kind: "alert", title: "Patent cliff approaching", detail: "Zelbrava ($7.2B) loses exclusivity Q3 2027.", time: "1d ago", unread: false, action: "sector:pharma" },
+    { id: "n7", kind: "deal", title: "Deal archived", detail: "Cedarmark Dental was passed and moved to Archived.", time: "2d ago", unread: false, action: "view:dealflow" },
+  ];
+
   const drugLaunch = [
     { drug: "Onvexa", company: "Helix Bio", molecule: "Anti-IL23 mAb", price: 4820, comp: 5100, status: "Launched" },
     { drug: "Temravir", company: "Northstar Pharma", molecule: "NS5A inhibitor", price: 3110, comp: 2980, status: "Launched" },
@@ -637,7 +648,7 @@
   window.DB = {
     deals, financials, people, sources, activity, portfolio, misSeries, misTimeline,
     sectors, briefing, drugLaunch, patentCliff, sentiment, sectorSources, ingestion, files, analyses, quickLinks,
-    inbox, actions, tenders, institutional, team, roles,
+    inbox, actions, tenders, institutional, team, roles, notifications,
     firm: "Paragon Capital", intakeEmail: "deals@paragon.com",
     SECTOR_COLOR, logoColor,
     activeDeals: () => deals.filter((d) => d.status !== "Passed"),

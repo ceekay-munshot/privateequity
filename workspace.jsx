@@ -88,30 +88,31 @@ function TearSheet({ d, onExplore }) {
     <div style={{ display: "grid", gridTemplateColumns: "1fr 300px", gap: 22, alignItems: "start" }}>
       <div>
         {/* header */}
-        <div className="row gap-16" style={{ alignItems: "flex-start", marginBottom: 20 }}>
-          <LogoTile initials={d.initials} sector={d.sector} size={54} />
+        <div className="row gap-14" style={{ alignItems: "flex-start", marginBottom: 22 }}>
+          <LogoTile initials={d.initials} sector={d.sector} size={52} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="row gap-10 center" style={{ marginBottom: 4 }}>
-              <h1 className="t-h1">{d.name}</h1>
-              <span className="pill pill-screening">{d.strategy}</span>
+            <div className="row gap-8 center wrap" style={{ marginBottom: 6 }}>
+              <h1 className="t-h1" style={{ marginRight: 2 }}>{d.name}</h1>
               <StatusPill status={d.status} />
+              <span className="tag">{d.strategy}</span>
             </div>
-            <p className="t-body" style={{ marginBottom: 8 }}>{d.desc}</p>
-            <div className="row gap-14 center wrap">
-              <span className="row gap-5 center t-small"><Icon name="globe" size={13} style={{ color: "var(--text-muted)" }} /> {d.website}</span>
-              <span className="row gap-5 center t-small"><Icon name="pin" size={13} style={{ color: "var(--text-muted)" }} /> {d.hq}</span>
-              <span className="row gap-5 center t-small"><Icon name="layers" size={13} style={{ color: "var(--text-muted)" }} /> {d.sector} · {d.sub}</span>
+            <p className="t-body" style={{ marginBottom: 10, maxWidth: 620 }}>{d.desc}</p>
+            <div className="row gap-16 center wrap">
+              <span className="row gap-6 center t-small"><Icon name="globe" size={13} style={{ color: "var(--text-muted)" }} /> {d.website}</span>
+              <span className="row gap-6 center t-small"><Icon name="pin" size={13} style={{ color: "var(--text-muted)" }} /> {d.hq}</span>
+              <span className="row gap-6 center t-small"><Icon name="layers" size={13} style={{ color: "var(--text-muted)" }} /> {d.sector} · {d.sub}</span>
             </div>
           </div>
-          <div className="row gap-8 center">
+          <div className="row gap-8 center" style={{ flex: "none" }}>
             <button className="btn btn-primary btn-sm nowrap" onClick={() => ctx.toast("Drafting screening memo from the IM + emails using your house template…", "ai")}><Icon name="sparkles" size={13} /> Screening memo</button>
-            <div className="row gap-4 center">
-              {["external", "linkedin", "bookmark", "download"].map((ic) => (
-                <button key={ic} className="btn btn-icon btn-secondary btn-sm tip" onClick={() => ic === "download" ? ctx.navigate("memos") : ctx.toast("Opening " + ic, "")}>
-                  <Icon name={ic} size={14} />
-                </button>
-              ))}
-            </div>
+            <Menu align="right" trigger={<button className="btn btn-icon btn-secondary btn-sm"><Icon name="more" size={16} /></button>}
+              items={[
+                { icon: "external", text: "Visit website", onClick: () => ctx.toast("Opening " + d.website, "") },
+                { icon: "linkedin", text: "View on LinkedIn", onClick: () => ctx.toast("Opening LinkedIn", "") },
+                { icon: "bookmark", text: "Bookmark deal", onClick: () => ctx.toast("Deal bookmarked", "check") },
+                { sep: true },
+                { icon: "download", text: "Export to memo", onClick: () => ctx.navigate("memos") },
+              ]} />
           </div>
         </div>
 
@@ -198,25 +199,23 @@ function TearSheet({ d, onExplore }) {
       <div>
         <div className="card card-pad rail-panel">
           <div className="rail-panel-head"><span className="t-h3">Quick Links</span><span className="tip" style={{ display: "inline-flex" }}><Icon name="sparkles" size={14} style={{ color: "var(--violet-500)" }} /><span className="tip-bub" style={{ width: 180, whiteSpace: "normal" }}>Each opens a pre-seeded research session scoped to that topic</span></span></div>
-          <div className="col" style={{ gap: 1 }}>
-            {db.quickLinks.map((q, i) => {
+          <div className="col" style={{ gap: 2 }}>
+            {db.quickLinks.map((q) => {
               const meta = db.quickLinkMeta[q] || {};
               const conf = meta.status === "review" ? "review" : meta.status === "stale" ? "estimated" : "verified";
               return (
-                <div key={q} className="row between center pointer" style={{ padding: "8px 9px", borderRadius: 8, fontSize: 12.5 }} onClick={() => onExplore(q)}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "var(--gray-100)"} onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}>
-                  <span className="row gap-9 center" style={{ minWidth: 0 }}>
-                    <span style={{ width: 22, height: 22, borderRadius: 6, background: "var(--violet-50)", color: "var(--violet-500)", display: "flex", alignItems: "center", justifyContent: "center", flex: "none" }}><Icon name="chat" size={12} /></span>
-                    <span style={{ minWidth: 0 }}><span className="truncate" style={{ display: "block" }}>{q}</span><span className="t-small row gap-5 center" style={{ marginTop: 1 }}><ConfDot level={conf} />{meta.fresh || "Not yet run"}</span></span>
+                <button key={q} className="ql-item" onClick={() => onExplore(q)}>
+                  <span className={"ql-dot conf-" + conf}></span>
+                  <span className="ql-main">
+                    <span className="ql-title">{q}</span>
+                    <span className="ql-meta">{meta.fresh || "Not yet run"}</span>
                   </span>
-                  <Icon name="arrowRight" size={13} style={{ color: "var(--gray-300)", flex: "none" }} />
-                </div>
+                  <Icon name="arrowRight" size={14} className="ql-arrow" />
+                </button>
               );
             })}
-            <div className="row gap-8 center pointer" style={{ padding: "8px 9px", borderRadius: 8, fontSize: 12, color: "var(--blue-600)", fontWeight: 540 }} onClick={() => ctx.toast("Save the current Explore query to Quick Links", "")}>
-              <Icon name="plus" size={13} /> Save a Q&A query
-            </div>
           </div>
+          <button className="btn btn-secondary btn-sm" style={{ width: "100%", justifyContent: "center", marginTop: 10 }} onClick={() => ctx.toast("Save the current Explore query to Quick Links", "")}><Icon name="plus" size={13} /> Save a Q&A query</button>
         </div>
 
         <div className="card card-pad rail-panel">

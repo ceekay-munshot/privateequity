@@ -7,6 +7,7 @@ const NAV = [
   { section: null, items: [
     { id: "home", label: "Home", icon: "home" },
     { id: "dealflow", label: "Deal Flow", icon: "dealflow", badge: "6" },
+    { id: "notifications", label: "Notifications", icon: "bell" },
   ]},
   { section: "Intelligence", items: [
     { id: "sector", label: "Sector Intelligence", icon: "sector" },
@@ -21,7 +22,7 @@ const NAV = [
 ];
 
 const VIEW_TITLES = {
-  home: "Home", dealflow: "Deal Flow", sector: "Sector Intelligence", explore: "Explore",
+  home: "Home", dealflow: "Deal Flow", notifications: "Notifications", sector: "Sector Intelligence", explore: "Explore",
   documents: "Documents", globalfiles: "Global Files", memos: "Memos & Models", templates: "Templates", settings: "Settings",
   workspace: "Deal Flow", sectorco: "Sector Intelligence",
 };
@@ -36,7 +37,12 @@ function App() {
   const [source, setSource] = uS(null);
   const [fileFilters, setFileFilters] = uS(null);
   const [editSection, setEditSection] = uS(null);
+  const [emailAuto, setEmailAuto] = uS(false);
+  const [notifRead, setNotifRead] = uS({});
   const [toasts, setToasts] = uS([]);
+
+  const markNotifRead = uC((id) => setNotifRead((r) => ({ ...r, [id]: true })), []);
+  const markAllNotif = uC(() => setNotifRead(() => { const o = {}; window.DB.notifications.forEach((n) => (o[n.id] = true)); return o; }), []);
 
   const navigate = uC((view, params = {}) => {
     setRoute({ view, params });
@@ -68,6 +74,8 @@ function App() {
     openSource: (metric, value) => setSource({ metric, value }),
     openFileFilters: (cfg) => setFileFilters(cfg || {}),
     openEditSection: (s) => setEditSection(s || {}),
+    openEmailAutomation: () => setEmailAuto(true),
+    notifRead, markNotifRead, markAllNotif,
   };
 
   // breadcrumbs
@@ -79,6 +87,7 @@ function App() {
   })();
 
   const activeNav = route.view === "workspace" ? "dealflow" : route.view === "sectorco" ? "sector" : route.view;
+  const unread = window.DB.notifications.filter((n) => n.unread && !notifRead[n.id]).length;
 
   const renderView = () => {
     switch (route.view) {
@@ -88,6 +97,7 @@ function App() {
       case "sector": return <window.SectorView />;
       case "sectorco": return <window.SectorCoView params={route.params} />;
       case "explore": return <window.ExploreLanding params={route.params} />;
+      case "notifications": return <window.NotificationsView />;
       case "documents": return <window.DocumentsView params={route.params} />;
       case "memos": return <window.MemosView />;
       case "globalfiles": return <window.GlobalFilesView />;
@@ -117,7 +127,9 @@ function App() {
                 {grp.items.map((it) => (
                   <div key={it.id} className={"nav-item" + (activeNav === it.id ? " active" : "")} onClick={() => navigate(it.id)} title={it.label}>
                     <Icon name={it.icon} size={17} /><span>{it.label}</span>
-                    {it.badge && <span className={"nav-badge" + (it.amber ? " amber" : "")}>{it.badge}</span>}
+                    {it.id === "notifications"
+                      ? (unread > 0 && <span className="nav-badge red">{unread}</span>)
+                      : (it.badge && <span className={"nav-badge" + (it.amber ? " amber" : "")}>{it.badge}</span>)}
                   </div>
                 ))}
               </div>
@@ -150,7 +162,7 @@ function App() {
               <span style={{ flex: 1 }}>Type @ to jump to a deal, company or sector…</span>
               <span className="kbd">⌘K</span>
             </div>
-            <button className="btn btn-icon btn-ghost tip" onClick={() => toast("3 new alerts: 1 tender, 2 deals", "")}><Icon name="bell" size={18} /><span className="tip-bub">Notifications</span></button>
+            <window.NotificationBell />
             <Menu align="right" trigger={<button className="btn btn-primary btn-sm"><Icon name="plus" size={14} /> New <Icon name="chevDown" size={12} /></button>}
               items={[{ icon: "layers", text: "New Deal", onClick: () => setWizard(true) }, { icon: "sparkles", text: "Generate Memo", onClick: () => navigate("memos") }, { icon: "sector", text: "Sector Tracker", onClick: () => navigate("sector") }]} />
           </div>
@@ -169,6 +181,7 @@ function App() {
       {source && <window.SourceModal metric={source.metric} value={source.value} onClose={() => setSource(null)} />}
       {fileFilters && <window.FileFiltersDrawer cfg={fileFilters} onClose={() => setFileFilters(null)} />}
       {editSection && <window.EditSectionModal section={editSection} onClose={() => setEditSection(null)} />}
+      {emailAuto && <window.EmailAutomationDrawer onClose={() => setEmailAuto(false)} />}
 
       {/* toasts */}
       <div className="toast-wrap">
