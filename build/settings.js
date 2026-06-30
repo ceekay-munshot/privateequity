@@ -62,7 +62,7 @@ function WorkspaceSettings() {
     size: 14
   }), " Copy")), React.createElement("p", {
     className: "t-small mt-8"
-  }, "Anything forwarded here is auto-parsed into the pipeline \u2014 teasers, IMs, and \"next steps\" tables.")), React.createElement("div", {
+  }, "Teasers, IMs and memos forwarded here are ingested, indexed and filed to the right deal. Stage changes stay manual.")), React.createElement("div", {
     className: "card card-pad"
   }, React.createElement("div", {
     className: "label mb-8"
@@ -134,7 +134,7 @@ function IntegrationsSettings() {
       color: "var(--blue-600)"
     }
   }, React.createElement(Icon, {
-    name: "sparkles",
+    name: "database",
     size: 16
   })), React.createElement("div", {
     style: {
@@ -145,12 +145,14 @@ function IntegrationsSettings() {
       fontSize: 13,
       fontWeight: 560
     }
-  }, "Email \u2192 status automation is live"), React.createElement("div", {
+  }, "Connected data sources"), React.createElement("div", {
     className: "t-small"
-  }, "The AI reads \"next steps\" tables in forwarded emails and moves deals through the pipeline automatically.")), React.createElement("button", {
+  }, "Intake mailboxes, document stores and market-data providers feeding the pipeline. Stage changes are always made manually.")), React.createElement("button", {
     className: "btn btn-secondary btn-sm",
-    onClick: () => ctx.navigate("dealflow")
-  }, "Review updates ", React.createElement(Icon, {
+    onClick: () => ctx.navigate("documents", {
+      tab: "sources"
+    })
+  }, "Ingestion sources ", React.createElement(Icon, {
     name: "arrowRight",
     size: 13
   }))), cats.map(cat => React.createElement("div", {

@@ -77,7 +77,6 @@ function App() {
   const [source, setSource] = uS(null);
   const [fileFilters, setFileFilters] = uS(null);
   const [editSection, setEditSection] = uS(null);
-  const [emailAuto, setEmailAuto] = uS(false);
   const [notifRead, setNotifRead] = uS({});
   const [toasts, setToasts] = uS([]);
   const markNotifRead = uC(id => setNotifRead(r => ({
@@ -132,7 +131,6 @@ function App() {
     }),
     openFileFilters: cfg => setFileFilters(cfg || {}),
     openEditSection: s => setEditSection(s || {}),
-    openEmailAutomation: () => setEmailAuto(true),
     notifRead,
     markNotifRead,
     markAllNotif
@@ -376,8 +374,6 @@ function App() {
   }), editSection && React.createElement(window.EditSectionModal, {
     section: editSection,
     onClose: () => setEditSection(null)
-  }), emailAuto && React.createElement(window.EmailAutomationDrawer, {
-    onClose: () => setEmailAuto(false)
   }), React.createElement("div", {
     className: "toast-wrap"
   }, toasts.map(t => React.createElement("div", {

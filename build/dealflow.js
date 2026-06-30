@@ -1,4 +1,4 @@
-const STAGES = ["Triaging", "Screening", "IC Review", "Pursuing"];
+const STAGES = ["Stage 1", "Stage 2", "Stage 3", "Stage 4"];
 function DealFlowView({
   params
 }) {
@@ -87,7 +87,7 @@ function DealFlowView({
     deals: db.deals.filter(d => d.isNew)
   }) : view === "archived" ? React.createElement(ArchivedTable, {
     deals: archived,
-    onRestore: d => move(d, "Screening")
+    onRestore: d => move(d, "Stage 2")
   }) : React.createElement("div", {
     style: {
       display: "grid",
@@ -600,164 +600,6 @@ function ArchivedTable({
     }]
   }))))))));
 }
-function EmailAutomationDrawer({
-  onClose
-}) {
-  const ctx = useContext(AppCtx);
-  const db = window.DB;
-  const [applied, setApplied] = useState({});
-  const isApplied = (eid, i, base) => applied[eid + ":" + i] !== undefined ? applied[eid + ":" + i] : base;
-  return React.createElement(Drawer, {
-    onClose: onClose
-  }, React.createElement("div", {
-    className: "modal-head"
-  }, React.createElement("div", null, React.createElement("div", {
-    className: "row gap-8 center mb-4"
-  }, React.createElement("span", {
-    style: {
-      width: 28,
-      height: 28,
-      borderRadius: 8,
-      background: "var(--blue-50)",
-      color: "var(--blue-600)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center"
-    }
-  }, React.createElement(Icon, {
-    name: "mail",
-    size: 15
-  })), React.createElement("h2", {
-    className: "t-h2"
-  }, "Email \u2192 Status")), React.createElement("p", {
-    className: "t-body"
-  }, "The AI read these emails and the \"next steps\" tables inside them.")), React.createElement("button", {
-    className: "x-btn",
-    onClick: onClose
-  }, React.createElement(Icon, {
-    name: "x",
-    size: 18
-  }))), React.createElement("div", {
-    className: "modal-body scroll",
-    style: {
-      display: "flex",
-      flexDirection: "column",
-      gap: 14
-    }
-  }, db.inbox.map(e => React.createElement("div", {
-    key: e.id,
-    className: "card card-pad"
-  }, React.createElement("div", {
-    className: "row gap-10 center mb-8"
-  }, React.createElement("span", {
-    className: "feed-ic",
-    style: {
-      background: "var(--bg-sunken)",
-      color: "var(--text-secondary)"
-    }
-  }, React.createElement(Icon, {
-    name: "mail",
-    size: 14
-  })), React.createElement("div", {
-    style: {
-      flex: 1,
-      minWidth: 0
-    }
-  }, React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 560
-    },
-    className: "truncate"
-  }, e.subject), React.createElement("div", {
-    className: "t-small"
-  }, e.from, " \xB7 ", e.time))), React.createElement("p", {
-    className: "t-small",
-    style: {
-      fontStyle: "italic",
-      marginBottom: 10
-    }
-  }, "\"", e.preview, "\""), React.createElement("div", {
-    className: "label mb-8"
-  }, "Detected next steps"), React.createElement("div", {
-    className: "col gap-8"
-  }, e.updates.map((u, i) => {
-    const deal = db.dealById(u.deal);
-    const on = isApplied(e.id, i, u.applied);
-    return React.createElement("div", {
-      key: i,
-      className: "card",
-      style: {
-        padding: 11,
-        background: "var(--bg-subtle)"
-      }
-    }, React.createElement("div", {
-      className: "row between center mb-4"
-    }, React.createElement("span", {
-      style: {
-        fontWeight: 540,
-        fontSize: 12.5
-      }
-    }, deal ? deal.name : u.deal), u.from !== u.to ? React.createElement("span", {
-      className: "row gap-5 center t-small"
-    }, React.createElement(StatusPill, {
-      status: u.from,
-      dot: false
-    }), React.createElement(Icon, {
-      name: "arrowRight",
-      size: 12,
-      style: {
-        color: "var(--text-muted)"
-      }
-    }), React.createElement(StatusPill, {
-      status: u.to,
-      dot: false
-    })) : React.createElement("span", {
-      className: "tag"
-    }, "No status change")), React.createElement("div", {
-      className: "t-small",
-      style: {
-        marginBottom: 8
-      }
-    }, u.step), on ? React.createElement("span", {
-      className: "row gap-5 center",
-      style: {
-        color: "var(--green-600)",
-        fontSize: 11.5,
-        fontWeight: 560
-      }
-    }, React.createElement(Icon, {
-      name: "checkCircle",
-      size: 13
-    }), " Applied automatically") : React.createElement("button", {
-      className: "btn btn-secondary btn-sm",
-      onClick: () => {
-        setApplied(p => ({
-          ...p,
-          [e.id + ":" + i]: true
-        }));
-        ctx.toast("Applied — " + (deal ? deal.name : u.deal) + " updated", "check");
-      }
-    }, React.createElement(Icon, {
-      name: "check",
-      size: 12
-    }), " Apply update"));
-  }))))), React.createElement("div", {
-    className: "modal-foot"
-  }, React.createElement("button", {
-    className: "btn btn-secondary",
-    onClick: onClose
-  }, "Close"), React.createElement("button", {
-    className: "btn btn-primary",
-    onClick: () => {
-      onClose();
-      ctx.toast("All email updates applied", "check");
-    }
-  }, React.createElement(Icon, {
-    name: "check",
-    size: 14
-  }), " Apply all")));
-}
 function ExcelImportModal({
   onClose
 }) {
@@ -1184,5 +1026,4 @@ function fmtDate(s) {
   });
 }
 window.DealFlowView = DealFlowView;
-window.EmailAutomationDrawer = EmailAutomationDrawer;
 window.fmtDate = fmtDate;

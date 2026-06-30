@@ -290,25 +290,30 @@ function TearSheet({
     iconColor: "#2f6bff",
     actions: React.createElement("span", {
       className: "tag",
-      title: "Profile enriched from external data"
+      title: "Built from the deal's own documents"
     }, React.createElement(Icon, {
-      name: "sparkles",
+      name: "fileText",
       size: 10
-    }), " Enriched")
+    }), " From documents")
   }, React.createElement("div", {
-    className: "row gap-6 wrap",
+    className: "row gap-6 wrap center",
     style: {
       marginBottom: 14
     }
   }, React.createElement("span", {
     className: "t-small text-muted"
-  }, "Enriched by:"), React.createElement("span", {
+  }, "Sourced from:"), React.createElement("span", {
     className: "tag"
-  }, "PitchBook comps"), React.createElement("span", {
+  }, "Information Memorandum"), React.createElement("span", {
     className: "tag"
-  }, "Broker research"), React.createElement("span", {
+  }, "Teaser"), React.createElement("span", {
     className: "tag"
-  }, "EU alt-data")), React.createElement("div", {
+  }, "Process Letter"), React.createElement("span", {
+    className: "tag",
+    style: {
+      color: "var(--text-muted)"
+    }
+  }, "+ external data (optional)")), React.createElement("div", {
     className: "kv-grid"
   }, React.createElement(KV, {
     k: "Description"
@@ -331,7 +336,10 @@ function TearSheet({
     k: "Founded"
   }, d.founded), React.createElement(KV, {
     k: "Regions Served"
-  }, d.regions))), React.createElement(SectionCard, {
+  }, d.regions)), React.createElement(SourceLine, {
+    metric: "Company Overview",
+    label: "Information Memorandum (p.3) \xB7 Teaser"
+  })), React.createElement(SectionCard, {
     title: "Deal Terms",
     icon: "scale",
     iconColor: "#7c5cfc"
@@ -340,27 +348,51 @@ function TearSheet({
   }, React.createElement(KV, {
     k: "Deal Structure"
   }, React.createElement("span", {
+    className: "row gap-6 pointer",
     style: {
       fontWeight: 440,
-      fontSize: 13
-    }
-  }, "Majority recapitalization with management rollover and a co-investment sleeve.")), React.createElement(KV, {
+      fontSize: 13,
+      alignItems: "flex-start"
+    },
+    onClick: () => ctx.openSource("Deal Structure"),
+    title: "View source"
+  }, React.createElement(ConfDot, {
+    level: "verified"
+  }), React.createElement("span", null, "Majority recapitalization with management rollover and a co-investment sleeve."))), React.createElement(KV, {
     k: "Investment Amount"
   }, React.createElement(Prov, {
-    value: "$" + d.ask + "M",
-    metric: "Pre-money Valuation",
+    value: d.ask != null ? "$" + d.ask + "M" : "—",
+    metric: "Investment Amount",
     conf: "estimated"
   })), React.createElement(KV, {
     k: "Investment Stage"
-  }, d.stage), React.createElement(KV, {
+  }, React.createElement(Prov, {
+    value: d.stage,
+    metric: "Investment Stage",
+    conf: "verified"
+  })), React.createElement(KV, {
     k: "Ownership %"
   }, React.createElement(Prov, {
     value: d.ownership != null ? d.ownership + "%" : "—",
-    metric: "default",
+    metric: "Ownership",
     conf: "estimated"
   })), React.createElement(KV, {
     k: "Use of Proceeds"
-  }, "Shareholder liquidity, M&A, intl. expansion"))), React.createElement(SectionCard, {
+  }, React.createElement("span", {
+    className: "row gap-6 pointer",
+    style: {
+      fontWeight: 440,
+      fontSize: 13,
+      alignItems: "flex-start"
+    },
+    onClick: () => ctx.openSource("Use of Proceeds"),
+    title: "View source"
+  }, React.createElement(ConfDot, {
+    level: "verified"
+  }), React.createElement("span", null, "Shareholder liquidity, M&A, intl. expansion.")))), React.createElement(SourceLine, {
+    metric: "Deal Terms",
+    label: "Process Letter (p.2) \xB7 Banker email"
+  })), React.createElement(SectionCard, {
     title: "Financial & Valuation Highlights",
     icon: "trending",
     iconColor: "#16a34a"
@@ -379,7 +411,7 @@ function TearSheet({
   }), React.createElement(HiMetric, {
     k: "Post-money Valuation",
     v: d.postMoney != null ? "$" + d.postMoney + "M" : "—",
-    metric: "default",
+    metric: "Post-money Valuation",
     conf: "estimated",
     as: "2026"
   }), React.createElement(HiMetric, {
@@ -396,7 +428,10 @@ function TearSheet({
     conf: "verified",
     yoy: d.ebitdaYoY,
     as: "2022"
-  }))), React.createElement(SectionCard, {
+  })), React.createElement(SourceLine, {
+    metric: "Pre-money Valuation",
+    label: "Process Letter (p.2) \xB7 Management model"
+  })), React.createElement(SectionCard, {
     title: "Financial Statements Summary",
     icon: "table",
     iconColor: "#2563eb",
@@ -416,6 +451,9 @@ function TearSheet({
     group: "Performance",
     rows: fin.perf,
     last: true
+  }), React.createElement(SourceLine, {
+    metric: "EBITDA",
+    label: "Audited Financials (FY22) \xB7 Management model"
   })), React.createElement(SectionCard, {
     title: "Key People",
     icon: "users",
@@ -489,7 +527,12 @@ function TearSheet({
       marginTop: 12
     },
     onClick: () => setShowPeople(s => !s)
-  }, showPeople ? "Show less" : `Show ${ppl.length - 2} more`)))), React.createElement("div", null, React.createElement("div", {
+  }, showPeople ? "Show less" : `Show ${ppl.length - 2} more`), React.createElement(SourceLine, {
+    metric: "Key People",
+    label: "Information Memorandum (p.12) \xB7 LinkedIn"
+  })), React.createElement(NotesCard, {
+    d: d
+  }))), React.createElement("div", null, React.createElement("div", {
     className: "card card-pad rail-panel"
   }, React.createElement("div", {
     className: "rail-panel-head"
@@ -754,8 +797,21 @@ function ActionablesCard({
       color: a.done ? "var(--text-muted)" : "var(--text-primary)"
     }
   }, a.text), React.createElement("div", {
+    className: "row gap-6 center wrap",
+    style: {
+      marginTop: 2
+    }
+  }, React.createElement("span", {
     className: "t-small"
-  }, a.owner, " \xB7 ", a.due)), React.createElement("span", {
+  }, a.owner, " \xB7 ", a.due), a.src && React.createElement("span", {
+    className: "tag",
+    style: {
+      fontSize: 9
+    }
+  }, React.createElement(Icon, {
+    name: "sourceDoc",
+    size: 9
+  }), " ", a.src))), React.createElement("span", {
     className: "tag",
     style: {
       fontSize: 10,
@@ -832,6 +888,92 @@ function RailBtn({
   }), label), badge && React.createElement("span", {
     className: "t-small"
   }, badge));
+}
+function SourceLine({
+  metric,
+  label
+}) {
+  const ctx = useContext(AppCtx);
+  return React.createElement("div", {
+    className: "row gap-6 center pointer",
+    style: {
+      marginTop: 14,
+      paddingTop: 10,
+      borderTop: "1px solid var(--border)",
+      color: "var(--text-muted)"
+    },
+    onClick: () => ctx.openSource(metric),
+    title: "View source documents"
+  }, React.createElement(Icon, {
+    name: "sourceDoc",
+    size: 12
+  }), React.createElement("span", {
+    className: "t-small"
+  }, "Source: ", label), React.createElement(Icon, {
+    name: "arrowRight",
+    size: 11,
+    style: {
+      marginLeft: "auto"
+    }
+  }));
+}
+function NotesCard({
+  d
+}) {
+  const ctx = useContext(AppCtx);
+  const notes = window.DB.notesFor(d.id);
+  return React.createElement(SectionCard, {
+    title: "Notes",
+    icon: "fileText",
+    iconColor: "#2f6bff",
+    actions: React.createElement("span", {
+      className: "tag"
+    }, notes.length, " note", notes.length === 1 ? "" : "s")
+  }, notes.length === 0 ? React.createElement("p", {
+    className: "t-body",
+    style: {
+      marginBottom: 12
+    }
+  }, "No notes yet. Capture what came out of a banker call or the pipeline meeting \u2014 each note keeps the source it came from.") : React.createElement("div", {
+    className: "col gap-10"
+  }, notes.map((n, i) => React.createElement("div", {
+    key: i,
+    className: "card",
+    style: {
+      padding: 12
+    }
+  }, React.createElement("p", {
+    style: {
+      fontSize: 13,
+      lineHeight: 1.5,
+      marginBottom: 8,
+      color: "var(--text-primary)"
+    }
+  }, n.text), React.createElement("div", {
+    className: "row gap-8 center wrap"
+  }, React.createElement("span", {
+    className: "t-small"
+  }, n.who, " \xB7 ", n.date), React.createElement("span", {
+    className: "tag pointer",
+    style: {
+      fontSize: 10,
+      marginLeft: "auto"
+    },
+    onClick: () => ctx.openSource("Notes"),
+    title: "View source"
+  }, React.createElement(Icon, {
+    name: "sourceDoc",
+    size: 10
+  }), " ", n.src))))), React.createElement("button", {
+    className: "btn btn-secondary btn-sm",
+    style: {
+      marginTop: 12
+    },
+    onClick: () => ctx.toast("Add a note — captured with its source", "")
+  }, React.createElement(Icon, {
+    name: "plus",
+    size: 13
+  }), " Add note"));
 }
 function HiMetric({
   k,

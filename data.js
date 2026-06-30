@@ -32,10 +32,10 @@
       ebitda: 38.5,
       ask: 920,
       fit: 91,
-      status: "Screening",
+      status: "Stage 2",
       strategy: "PE Direct",
       dealType: "Company",
-      stage: "Screening",
+      stage: "Stage 2",
       geo: "Boston, MA",
       hq: "Boston, Massachusetts, USA",
       website: "meridiansurgical.com",
@@ -66,10 +66,10 @@
       ebitda: 41.2,
       ask: 640,
       fit: 84,
-      status: "IC Review",
+      status: "Stage 3",
       strategy: "PE Direct",
       dealType: "Company",
-      stage: "IC Review",
+      stage: "Stage 3",
       geo: "Chicago, IL",
       hq: "Chicago, Illinois, USA",
       website: "northwindlogistics.com",
@@ -100,10 +100,10 @@
       ebitda: 14.1,
       ask: 310,
       fit: 78,
-      status: "Triaging",
+      status: "Stage 1",
       strategy: "PE Direct",
       dealType: "Company",
-      stage: "Triaging",
+      stage: "Stage 1",
       geo: "Los Angeles, CA",
       hq: "Los Angeles, California, USA",
       website: "lumenskincare.com",
@@ -134,10 +134,10 @@
       ebitda: 9.6,
       ask: 480,
       fit: 88,
-      status: "Screening",
+      status: "Stage 2",
       strategy: "PE Direct",
       dealType: "Company",
-      stage: "Screening",
+      stage: "Stage 2",
       geo: "Austin, TX",
       hq: "Austin, Texas, USA",
       website: "cobaltcloud.com",
@@ -204,10 +204,10 @@
       ebitda: 27.5,
       ask: 380,
       fit: 69,
-      status: "Pursuing",
+      status: "Stage 4",
       strategy: "PE Direct",
       dealType: "Company",
-      stage: "Pursuing",
+      stage: "Stage 4",
       geo: "Minneapolis, MN",
       hq: "Minneapolis, Minnesota, USA",
       website: "harborstonefoods.com",
@@ -238,10 +238,10 @@
       ebitda: 11.8,
       ask: 290,
       fit: 81,
-      status: "Screening",
+      status: "Stage 2",
       strategy: "PE Direct",
       dealType: "Company",
-      stage: "Screening",
+      stage: "Stage 2",
       geo: "San Diego, CA",
       hq: "San Diego, California, USA",
       website: "silverpeakdx.com",
@@ -379,6 +379,41 @@
     "Employees": [
       { doc: "Meridian_CIM_2026.pdf", page: 12, excerpt: "As of March 2026, Meridian employed 480 full-time staff across R&D (140), Commercial (190), Operations (110), and G&A (40).", type: "CIM" },
     ],
+    "Investment Amount": [
+      { doc: "Jefferies_ProcessLetter.pdf", page: 2, excerpt: "Indicative equity investment of approximately $920M for a majority position, per the process guidelines.", type: "Process Letter" },
+      { doc: "Daniel Mehta · Jefferies — email", page: 1, excerpt: "Sponsor is anchoring around a ~$920M equity check with management rollover. Happy to walk through structure.", type: "Banker email" },
+    ],
+    "Deal Structure": [
+      { doc: "Jefferies_ProcessLetter.pdf", page: 3, excerpt: "The Company is running a majority recapitalization with management rollover and a co-investment sleeve for select LPs.", type: "Process Letter" },
+    ],
+    "Use of Proceeds": [
+      { doc: "Meridian_CIM_2026.pdf", page: 41, excerpt: "Proceeds will fund shareholder liquidity, bolt-on M&A and international expansion across the EU and APAC.", type: "CIM" },
+    ],
+    "Ownership": [
+      { doc: "Jefferies_ProcessLetter.pdf", page: 2, excerpt: "A controlling stake of approximately 60% is contemplated, with founders retaining a meaningful minority.", type: "Process Letter" },
+    ],
+    "Post-money Valuation": [
+      { doc: "Meridian_MgmtModel_v4.xlsx", page: 1, excerpt: "Post-money equity value of ~$1,100M implied by the indicative pre-money plus the new primary capital.", type: "Management Model" },
+    ],
+    "Investment Stage": [
+      { doc: "Set manually by the deal team", page: "—", excerpt: "Stage is set by hand on the pipeline — last moved to Stage 2 by Alex Chen. Stages never move automatically.", type: "Pipeline · manual" },
+    ],
+    "Company Overview": [
+      { doc: "Meridian_CIM_2026.pdf", page: 3, excerpt: "Company overview, history and product description, sourced from the confidential information memorandum and teaser.", type: "CIM" },
+      { doc: "Meridian_Teaser.pdf", page: 1, excerpt: "Minimally-invasive surgical robotics platform for orthopedic procedures; HQ Boston, founded 2014.", type: "Teaser" },
+    ],
+    "Deal Terms": [
+      { doc: "Jefferies_ProcessLetter.pdf", page: 2, excerpt: "Headline deal terms — structure, size, ownership and use of proceeds — per the sell-side process letter.", type: "Process Letter" },
+    ],
+    "Key People": [
+      { doc: "Meridian_CIM_2026.pdf", page: 12, excerpt: "Management biographies and tenure per the CIM; cross-checked against public LinkedIn profiles.", type: "CIM" },
+    ],
+    "Notes": [
+      { doc: "Pipeline meeting — Jun 16", page: "—", excerpt: "Notes captured by the deal team from banker calls and the Monday pipeline meeting.", type: "Internal note" },
+    ],
+    "Next Steps & Actionables": [
+      { doc: "Daniel Mehta · Jefferies — email", page: 1, excerpt: "Next steps agreed with the banker: management call Thursday, IC pre-read to follow Friday.", type: "Banker email" },
+    ],
     "default": [
       { doc: "Meridian_CIM_2026.pdf", page: 18, excerpt: "Supporting figure extracted from the confidential information memorandum provided by the sell-side advisor.", type: "CIM" },
     ],
@@ -390,8 +425,8 @@
     { type: "file", deal: "Northwind Logistics", name: "Uploaded Q1-2026 Management Accounts.xlsx", user: "Sofia Reyes", color: "#2f6bff", time: "44m ago" },
     { type: "flag", deal: "Lumen Skincare", name: "CAC trend flagged — needs review", user: "Critic AI", color: "#e08a00", time: "1h ago" },
     { type: "analysis", deal: "Cobalt Cloud", name: "Created 'Investment Returns' analysis", user: "David Kim", color: "#16a34a", time: "2h ago" },
-    { type: "status", deal: "Northwind Logistics", name: "Auto-moved Screening → IC Review from banker email", user: "Email automation", color: "#2f6bff", time: "3h ago" },
-    { type: "deal", deal: "Silverpeak Diagnostics", name: "New deal ingested from deals@paragon.com", user: "Auto-intake", color: "#2f6bff", time: "5h ago" },
+    { type: "status", deal: "Northwind Logistics", name: "Moved to Stage 3 after the pipeline meeting", user: "Alex Chen", color: "#2f6bff", time: "3h ago" },
+    { type: "deal", deal: "Silverpeak Diagnostics", name: "New deal ingested from deals@paragonpartners.in", user: "Deal intake", color: "#2f6bff", time: "5h ago" },
   ];
 
   // ---- PORTFOLIO ----
@@ -524,15 +559,15 @@
     { role: "IC Member", deals: "IC stage+", sectors: "All", memos: "Review", settings: "—" },
   ];
 
-  // ---- NOTIFICATIONS (unified inbox: bell + sidebar hub) ----
+  // ---- NOTIFICATIONS (deal-flow inbox: bell + sidebar hub) ----
+  // Deal-flow events only — new deals, metric flags, manual stage changes, pipeline updates.
+  // Sector signals live in Sector Intelligence; portfolio alerts live in Portfolio. Not mixed here.
   const notifications = [
-    { id: "n1", kind: "email", title: "Email moved Northwind to IC Review", detail: "Banker email \"next steps\" table parsed — Screening → IC Review.", time: "2h ago", unread: true, action: "email" },
-    { id: "n2", kind: "flag", title: "Critic AI flagged a metric", detail: "Lumen Skincare — CAC trend needs review before screening.", time: "1h ago", unread: true, action: "deal:lumen" },
-    { id: "n3", kind: "deal", title: "New deal ingested", detail: "Silverpeak Diagnostics arrived via deals@paragon.com.", time: "5h ago", unread: true, action: "deal:silverpeak" },
-    { id: "n4", kind: "alert", title: "New government tender", detail: "Oncology biosimilars procurement — closes in 21 days.", time: "3h ago", unread: false, action: "sector:pharma" },
-    { id: "n5", kind: "email", title: "Pipeline meeting actions applied", detail: "3 status updates detected from Monday's pipeline email.", time: "1d ago", unread: false, action: "email" },
-    { id: "n6", kind: "alert", title: "Patent cliff approaching", detail: "Zelbrava ($7.2B) loses exclusivity Q3 2027.", time: "1d ago", unread: false, action: "sector:pharma" },
-    { id: "n7", kind: "deal", title: "Deal archived", detail: "Cedarmark Dental was passed and moved to Archived.", time: "2d ago", unread: false, action: "view:dealflow" },
+    { id: "n1", kind: "stage", title: "Northwind moved to Stage 3", detail: "Alex moved Northwind Logistics from Stage 2 → Stage 3 after the pipeline meeting.", time: "2h ago", unread: true, action: "deal:northwind" },
+    { id: "n2", kind: "flag", title: "Critic AI flagged a metric", detail: "Lumen Skincare — CAC trend needs review before it advances.", time: "1h ago", unread: true, action: "deal:lumen" },
+    { id: "n3", kind: "deal", title: "New deal ingested", detail: "Silverpeak Diagnostics arrived via deals@paragonpartners.in.", time: "5h ago", unread: true, action: "deal:silverpeak" },
+    { id: "n4", kind: "pipeline", title: "Weekly pipeline updated", detail: "6 active deals · 3 new this week — weekly pipeline PDF ready.", time: "1d ago", unread: false, action: "view:dealflow" },
+    { id: "n5", kind: "stage", title: "Deal archived", detail: "Cedarmark Dental was passed and moved to Archived.", time: "2d ago", unread: false, action: "view:dealflow" },
   ];
 
   const drugLaunch = [
@@ -564,57 +599,56 @@
     { name: "Tender Portal Monitor", type: "API", status: "Syncing" },
   ];
 
-  // ---- INGESTION SOURCES (settings) ----
+  // ---- INGESTION SOURCES (settings + documents) ----
+  // Intake mailboxes + document stores + market-data providers — shown so the team can
+  // see exactly what is connected. Stage changes are manual: there is no auto-move source.
   const ingestion = [
-    { name: "Deal Intake Inbox", detail: "deals@paragon.com · source of truth · auto-forward", icon: "mail", status: "Connected", sync: "Live", category: "Email" },
-    { name: "Email → Status automation", detail: "AI reads 'next steps' tables and updates deal status", icon: "mail", status: "Connected", sync: "Live", category: "Email" },
+    // Intake mailboxes
+    { name: "Deal Intake Inbox", detail: "deals@paragonpartners.in · primary intake · forward teasers, IMs & memos", icon: "mail", status: "Connected", sync: "Live", category: "Email" },
+    { name: "IM & Teaser Drop", detail: "im@paragonpartners.in · attachments auto-filed to the right deal", icon: "mail", status: "Connected", sync: "Live", category: "Email" },
+    { name: "WhatsApp Connector", detail: "Banker & intermediary forwards", icon: "chat", status: "Connected", sync: "14m ago", category: "Email" },
+    { name: "Telegram Deal Channels", detail: "3 channels monitored", icon: "chat", status: "Paused", sync: "—", category: "Email" },
+    // Document stores
     { name: "Dropbox — /Deal Flow (private)", detail: "Folder sync · 1,204 files · private deal data", icon: "folder", status: "Connected", sync: "2m ago", category: "Documents" },
     { name: "Google Drive — Diligence", detail: "Folder sync · 856 files", icon: "folder", status: "Connected", sync: "8m ago", category: "Documents" },
     { name: "Excel Deal Tracker", detail: "Import / export .xlsx · 1,240 rows", icon: "table", status: "Connected", sync: "Manual", category: "Documents" },
-    { name: "WhatsApp Connector", detail: "Banker & intermediary forwards", icon: "chat", status: "Connected", sync: "14m ago", category: "Email" },
-    { name: "PitchBook API", detail: "Data provider · comps & multiples", icon: "api", status: "Connected", sync: "1h ago", category: "External data" },
+    // Market-data providers
+    { name: "PrivateCircle", detail: "Indian private-company financials & filings", icon: "api", status: "Connected", sync: "1h ago", category: "External data" },
+    { name: "Crunchbase", detail: "Global startup, funding & M&A data", icon: "api", status: "Connected", sync: "1h ago", category: "External data" },
+    { name: "Tracxn", detail: "Private-market company & deal intelligence", icon: "api", status: "Connected", sync: "2h ago", category: "External data" },
+    { name: "PitchBook", detail: "Private-market comps & multiples", icon: "api", status: "Connected", sync: "1h ago", category: "External data" },
+    { name: "Preqin", detail: "Alternative-investments fund & deal data", icon: "api", status: "Connected", sync: "3h ago", category: "External data" },
+    { name: "Capital IQ", detail: "Public comps & filings", icon: "api", status: "Paused", sync: "—", category: "External data" },
     { name: "Broker Research (Jefferies, Blair)", detail: "Paid subscriptions · research notes", icon: "api", status: "Connected", sync: "1h ago", category: "External data" },
     { name: "Alternate Data — EU Providers", detail: "European registries & alt-data feeds", icon: "globe", status: "Connected", sync: "3h ago", category: "External data" },
-    { name: "Telegram Deal Channels", detail: "3 channels monitored", icon: "chat", status: "Paused", sync: "—", category: "Email" },
   ];
 
-  // ---- EMAIL → STATUS AUTOMATION (parsed "next steps" tables) ----
-  const inbox = [
-    {
-      id: "e1", from: "Daniel Mehta · Jefferies", subject: "RE: Meridian — process update & next steps", time: "2h ago",
-      preview: "As discussed, here are the next steps for the names we're running…",
-      updates: [
-        { deal: "meridian", from: "Screening", to: "IC Review", step: "Management call scheduled Thu — IC pre-read due Fri", applied: true },
-      ],
-    },
-    {
-      id: "e2", from: "Sofia Reyes · Internal", subject: "Pipeline meeting — actions", time: "1d ago",
-      preview: "Notes + next steps from Monday's pipeline meeting (table attached)…",
-      updates: [
-        { deal: "northwind", from: "Screening", to: "IC Review", step: "Draft IC memo; confirm freight downside case", applied: true },
-        { deal: "lumen", from: "Triaging", to: "Screening", step: "Request CAC cohort data from banker", applied: true },
-        { deal: "cobalt", from: "Screening", to: "Screening", step: "Schedule reference calls w/ 3 vet groups", applied: false },
-      ],
-    },
-  ];
-
-  // ---- ACTIONABLES / NEXT STEPS (per deal) ----
+  // ---- ACTIONABLES / NEXT STEPS (per deal) — each traceable to its source ----
   const actions = {
     meridian: [
-      { id: "a1", type: "call", text: "Banker call with Jefferies (process & timeline)", due: "Thu 2:00 PM", owner: "Alex Chen", done: false },
-      { id: "a2", type: "note", text: "Pipeline meeting: top-3 IDN concentration is the key flag to underwrite", due: "Logged", owner: "You", done: true },
-      { id: "a3", type: "task", text: "Request customer cohort file (2020–2026)", due: "Tomorrow", owner: "David Kim", done: false },
+      { id: "a1", type: "call", text: "Banker call with Jefferies (process & timeline)", due: "Thu 2:00 PM", owner: "Alex Chen", done: false, src: "Banker email · Jefferies" },
+      { id: "a2", type: "note", text: "Pipeline meeting: top-3 IDN concentration is the key flag to underwrite", due: "Logged", owner: "You", done: true, src: "Pipeline meeting" },
+      { id: "a3", type: "task", text: "Request customer cohort file (2020–2026)", due: "Tomorrow", owner: "David Kim", done: false, src: "Banker call" },
     ],
     northwind: [
-      { id: "a1", type: "task", text: "Draft IC memo from CIM + management model", due: "Fri", owner: "Sofia Reyes", done: false },
-      { id: "a2", type: "call", text: "Expert call on freight-cycle downside", due: "Next week", owner: "Alex Chen", done: false },
+      { id: "a1", type: "task", text: "Draft IC memo from CIM + management model", due: "Fri", owner: "Sofia Reyes", done: false, src: "Pipeline meeting" },
+      { id: "a2", type: "call", text: "Expert call on freight-cycle downside", due: "Next week", owner: "Alex Chen", done: false, src: "IC pre-read" },
     ],
     lumen: [
-      { id: "a1", type: "task", text: "Request CAC cohort data from Raymond James", due: "This week", owner: "You", done: false },
-      { id: "a2", type: "note", text: "Validate contribution margin at scale before screening memo", due: "Logged", owner: "You", done: false },
+      { id: "a1", type: "task", text: "Request CAC cohort data from Raymond James", due: "This week", owner: "You", done: false, src: "Banker email · Raymond James" },
+      { id: "a2", type: "note", text: "Validate contribution margin at scale before screening memo", due: "Logged", owner: "You", done: false, src: "Pipeline meeting" },
     ],
     cobalt: [
-      { id: "a1", type: "call", text: "Reference calls with 3 multi-site vet groups", due: "Next week", owner: "David Kim", done: false },
+      { id: "a1", type: "call", text: "Reference calls with 3 multi-site vet groups", due: "Next week", owner: "David Kim", done: false, src: "Pipeline meeting" },
+    ],
+  };
+
+  // ---- DEAL NOTES (per deal) — free-form, traceable to where each note came from ----
+  const notes = {
+    meridian: [
+      { text: "Founder open to a partnership structure with management rollover; wants to retain a board seat.", who: "Alex Chen", date: "Jun 16, 2026", src: "Banker call · Jefferies" },
+      { text: "Top-3 IDN concentration (~46% of placements) is the central flag — underwrite a downside on contract renewal.", who: "Sofia Reyes", date: "Jun 14, 2026", src: "Pipeline meeting" },
+      { text: "International is only 11% of revenue vs. ~40% for peers — a clear expansion lever for the buy-and-build.", who: "David Kim", date: "Jun 12, 2026", src: "Meridian CIM · p.18" },
     ],
   };
 
@@ -648,12 +682,13 @@
   window.DB = {
     deals, financials, people, sources, activity, portfolio, misSeries, misTimeline,
     sectors, briefing, drugLaunch, patentCliff, sentiment, sectorSources, ingestion, files, analyses, quickLinks,
-    inbox, actions, tenders, institutional, team, roles, notifications,
-    firm: "Paragon Capital", intakeEmail: "deals@paragon.com",
+    actions, notes, tenders, institutional, team, roles, notifications,
+    firm: "Paragon Capital", intakeEmail: "deals@paragonpartners.in",
     SECTOR_COLOR, logoColor,
     activeDeals: () => deals.filter((d) => d.status !== "Passed"),
     archivedDeals: () => deals.filter((d) => d.status === "Passed"),
     actionsFor: (id) => actions[id] || [],
+    notesFor: (id) => notes[id] || [],
     dealById: (id) => deals.find((d) => d.id === id),
     portfolioById: (id) => portfolio.find((p) => p.id === id),
   };

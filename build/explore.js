@@ -13,9 +13,7 @@ function ExploreView({
   const [quant, setQuant] = useState(false);
   const [input, setInput] = useState("");
   const [scope, setScope] = useState({
-    providers: {
-      preqin: true
-    },
+    providers: {},
     web: false,
     files: db.files.length,
     global: 0
@@ -396,7 +394,7 @@ function ExpTurn({
     className: "dot"
   }), "deal-research"), React.createElement("span", {
     className: "t-small"
-  }, "scoped to 7 deal files + Preqin \xB7 running retrieval & cross-check"))), turn.status === "streaming" && React.createElement("div", {
+  }, "scoped to this deal's documents \xB7 running retrieval & cross-check"))), turn.status === "streaming" && React.createElement("div", {
     className: "row gap-8 center",
     style: {
       padding: "10px 0",
@@ -858,7 +856,13 @@ function SourcesPopover({
     className: "menu-sep"
   }), React.createElement("div", {
     className: "menu-label"
-  }, "External Sources"), React.createElement(Row, {
+  }, "External Sources"), React.createElement("div", {
+    className: "t-small",
+    style: {
+      padding: "0 10px 6px",
+      color: "var(--text-muted)"
+    }
+  }, "Off by default \u2014 your deal's documents are always searched first."), React.createElement(Row, {
     icon: "globe",
     title: "Web Sources",
     desc: "Search the web for recent information",

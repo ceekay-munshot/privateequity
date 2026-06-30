@@ -1,38 +1,29 @@
 const NOTIF_META = {
-  email: {
-    icon: "mail",
-    color: "#2f6bff",
-    label: "Automation"
-  },
-  alert: {
-    icon: "alert",
-    color: "#e08a00",
-    label: "Alert"
-  },
-  flag: {
-    icon: "flag",
-    color: "#dc2626",
-    label: "Flag"
-  },
   deal: {
     icon: "layers",
     color: "#7c5cfc",
-    label: "Pipeline"
+    label: "New deal"
   },
-  system: {
-    icon: "info",
-    color: "#7c8597",
-    label: "System"
+  flag: {
+    icon: "flag",
+    color: "#e08a00",
+    label: "Metric flag"
+  },
+  stage: {
+    icon: "arrowRight",
+    color: "#2f6bff",
+    label: "Stage change"
+  },
+  pipeline: {
+    icon: "columns",
+    color: "#16a34a",
+    label: "Pipeline"
   }
 };
 function runNotif(ctx, n) {
   ctx.markNotifRead(n.id);
   const a = n.action;
   if (!a) return;
-  if (a === "email") {
-    ctx.openEmailAutomation();
-    return;
-  }
   const [t, id] = a.split(":");
   if (t === "deal") ctx.navigate("workspace", {
     id
@@ -144,7 +135,7 @@ function NotificationsView() {
     }
   }, React.createElement(PageHead, {
     title: "Notifications",
-    sub: "Everything that needs your attention \u2014 email automation, alerts, flags and pipeline activity."
+    sub: "Deal-flow activity \u2014 new deals, metric flags, stage changes and pipeline updates."
   }, unread > 0 && React.createElement("button", {
     className: "btn btn-secondary",
     onClick: () => ctx.markAllNotif()

@@ -4,18 +4,16 @@
    Read-state + email-drawer open are lifted to AppCtx.
    ============================================================ */
 const NOTIF_META = {
-  email:  { icon: "mail",  color: "#2f6bff", label: "Automation" },
-  alert:  { icon: "alert", color: "#e08a00", label: "Alert" },
-  flag:   { icon: "flag",  color: "#dc2626", label: "Flag" },
-  deal:   { icon: "layers", color: "#7c5cfc", label: "Pipeline" },
-  system: { icon: "info",  color: "#7c8597", label: "System" },
+  deal:     { icon: "layers",     color: "#7c5cfc", label: "New deal" },
+  flag:     { icon: "flag",       color: "#e08a00", label: "Metric flag" },
+  stage:    { icon: "arrowRight",  color: "#2f6bff", label: "Stage change" },
+  pipeline: { icon: "columns",    color: "#16a34a", label: "Pipeline" },
 };
 
 function runNotif(ctx, n) {
   ctx.markNotifRead(n.id);
   const a = n.action;
   if (!a) return;
-  if (a === "email") { ctx.openEmailAutomation(); return; }
   const [t, id] = a.split(":");
   if (t === "deal") ctx.navigate("workspace", { id });
   else if (t === "sector") ctx.navigate("sectorco", { id });
@@ -87,7 +85,7 @@ function NotificationsView() {
   const unread = notifUnread(ctx).length;
   return (
     <div className="page" style={{ maxWidth: 760 }}>
-      <PageHead title="Notifications" sub="Everything that needs your attention — email automation, alerts, flags and pipeline activity.">
+      <PageHead title="Notifications" sub="Deal-flow activity — new deals, metric flags, stage changes and pipeline updates.">
         {unread > 0 && <button className="btn btn-secondary" onClick={() => ctx.markAllNotif()}><Icon name="check" size={14} /> Mark all read</button>}
       </PageHead>
       <div className="row between center mb-16">

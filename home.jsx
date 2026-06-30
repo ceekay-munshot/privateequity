@@ -5,14 +5,14 @@ function HomeView() {
   const ctx = useContext(AppCtx);
   const db = window.DB;
   const active = db.activeDeals();
-  const inDiligence = active.filter((d) => ["IC Review", "Pursuing"].includes(d.status)).length;
+  const inDiligence = active.filter((d) => ["Stage 3", "Stage 4"].includes(d.status)).length;
   const stats = [
     { label: "Active Deals", value: String(active.length), delta: "+3 this week", up: true, icon: "dealflow", color: "#2f6bff", view: "dealflow" },
     { label: "In Diligence", value: String(inDiligence), delta: "IC review & pursuing", up: true, icon: "target", color: "#16a34a", view: "dealflow" },
     { label: "Sectors Tracked", value: String(db.sectors.length), delta: "40 new signals", up: true, icon: "sector", color: "#7c5cfc", view: "sector" },
     { label: "Needs Review", value: "8", delta: "AI-flagged items", up: false, icon: "flag", color: "#e08a00", view: "dealflow" },
   ];
-  const recent = active.filter((d) => ["Screening", "IC Review", "Triaging", "Pursuing"].includes(d.status)).slice(0, 5);
+  const recent = active.filter((d) => ["Stage 1", "Stage 2", "Stage 3", "Stage 4"].includes(d.status)).slice(0, 5);
   const [showAll, setShowAll] = useState(false);
   const shown = showAll ? recent : recent.slice(0, 3);
 

@@ -459,7 +459,7 @@ function IngestionSources() {
       color: "var(--blue-600)"
     }
   }, React.createElement(Icon, {
-    name: "sparkles",
+    name: "mail",
     size: 16
   })), React.createElement("div", {
     style: {
@@ -470,16 +470,16 @@ function IngestionSources() {
       fontSize: 13,
       fontWeight: 560
     }
-  }, "Email \u2192 status automation"), React.createElement("div", {
+  }, "Deal intake"), React.createElement("div", {
     className: "t-small"
   }, "Everything forwarded to ", React.createElement("strong", {
     style: {
       color: "var(--text-secondary)"
     }
-  }, db.intakeEmail), " is parsed into the pipeline. The AI reads \"next steps\" tables and moves deals automatically.")), React.createElement("button", {
+  }, db.intakeEmail), " is ingested, indexed and filed to the right deal. Deals only change stage when you move them.")), React.createElement("button", {
     className: "btn btn-secondary btn-sm",
-    onClick: () => ctx.navigate("dealflow")
-  }, "Review updates ", React.createElement(Icon, {
+    onClick: () => ctx.navigate("settings")
+  }, "Access control ", React.createElement(Icon, {
     name: "arrowRight",
     size: 13
   }))), React.createElement("div", {

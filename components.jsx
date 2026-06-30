@@ -11,8 +11,8 @@ const { useState, useEffect, useRef, useContext, useCallback } = React;
 const STATUS_CLASS = {
   Ready: "pill-ready", Verified: "pill-verified", Processing: "pill-processing",
   "Needs Review": "pill-review", Flagged: "pill-flagged", New: "pill-new",
-  Triaging: "pill-triaging", Screening: "pill-screening", "IC Review": "pill-ic",
-  Passed: "pill-passed", Pursuing: "pill-pursuing", "On Track": "pill-ready",
+  "Stage 1": "pill-triaging", "Stage 2": "pill-screening", "Stage 3": "pill-ic",
+  Passed: "pill-passed", "Stage 4": "pill-pursuing", "On Track": "pill-ready",
   Watch: "pill-review", Outperform: "pill-verified", Connected: "pill-ready",
   Syncing: "pill-processing", Paused: "pill-neutral", Launched: "pill-ready",
   Filed: "pill-screening", "Phase III": "pill-violet",

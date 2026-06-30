@@ -4,7 +4,7 @@
 function DealWizard({ onClose }) {
   const ctx = useContext(AppCtx);
   const [step, setStep] = useState(0);
-  const [form, setForm] = useState({ kind: "Company", invType: "PE Direct", name: "", sector: "Healthcare", geo: "", source: "", size: "", stage: "Screening" });
+  const [form, setForm] = useState({ kind: "Company", invType: "PE Direct", name: "", sector: "Healthcare", geo: "", source: "", size: "", stage: "Stage 1" });
   const steps = ["Deal Type", "Deal Details", "Documents", "Complete"];
   const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
   const next = () => setStep((s) => Math.min(3, s + 1));
@@ -56,7 +56,7 @@ function DealWizard({ onClose }) {
             <Field label="Geography"><input className="input" placeholder="e.g. Boston, MA" value={form.geo} onChange={(e) => set("geo", e.target.value)} /></Field>
             <Field label="Source / banker"><input className="input" placeholder="e.g. Jefferies" value={form.source} onChange={(e) => set("source", e.target.value)} /></Field>
             <Field label="Deal size ($M)"><input className="input" placeholder="e.g. 920" value={form.size} onChange={(e) => set("size", e.target.value)} /></Field>
-            <Field label="Stage" full><select className="select" value={form.stage} onChange={(e) => set("stage", e.target.value)}>{["New", "Triaging", "Screening", "IC Review", "Pursuing"].map((s) => <option key={s}>{s}</option>)}</select></Field>
+            <Field label="Stage" full><select className="select" value={form.stage} onChange={(e) => set("stage", e.target.value)}>{["Stage 1", "Stage 2", "Stage 3", "Stage 4"].map((s) => <option key={s}>{s}</option>)}</select></Field>
           </div>
         )}
         {step === 2 && (

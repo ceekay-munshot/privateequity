@@ -13,7 +13,8 @@ function ExploreView({ d, seed }) {
   }));
   const [quant, setQuant] = useState(false);
   const [input, setInput] = useState("");
-  const [scope, setScope] = useState({ providers: { preqin: true }, web: false, files: db.files.length, global: 0 });
+  // Default scope = this deal's own documents only. External providers and web are opt-in.
+  const [scope, setScope] = useState({ providers: {}, web: false, files: db.files.length, global: 0 });
   const threadRef = useRef(null);
 
   const active = sessions.find((s) => s.id === activeId);
@@ -162,7 +163,7 @@ function ExpTurn({ turn, d }) {
         {(turn.status === "delegating" || turn.status === "streaming" || done) && (
           <TraceBlock icon="command" open={showDelegate} onToggle={() => setShowDelegate((o) => !o)}
             label="Delegating to Deal Research agent" active={turn.status === "delegating"}>
-            <div className="row gap-8 center"><span className="pill pill-violet"><span className="dot"></span>deal-research</span><span className="t-small">scoped to 7 deal files + Preqin · running retrieval & cross-check</span></div>
+            <div className="row gap-8 center"><span className="pill pill-violet"><span className="dot"></span>deal-research</span><span className="t-small">scoped to this deal's documents · running retrieval & cross-check</span></div>
           </TraceBlock>
         )}
 
@@ -304,6 +305,7 @@ function SourcesPopover({ scope, setScope, providers, openFilters, onClose }) {
       <Row icon="globe" title="Global Files" desc="Organization-wide thematic files" right={<Icon name="chevRight" size={14} style={{ color: "var(--gray-400)" }} />} onClick={() => { onClose(); openFilters(); }} />
       <div className="menu-sep"></div>
       <div className="menu-label">External Sources</div>
+      <div className="t-small" style={{ padding: "0 10px 6px", color: "var(--text-muted)" }}>Off by default — your deal's documents are always searched first.</div>
       <Row icon="globe" title="Web Sources" desc="Search the web for recent information" right={<div className={"toggle" + (scope.web ? " on" : "")} onClick={(e) => { e.stopPropagation(); setScope((s) => ({ ...s, web: !s.web })); }}></div>} />
       {providers.map((p) => (
         <Row key={p.id} icon="database" title={p.name} desc={p.desc}

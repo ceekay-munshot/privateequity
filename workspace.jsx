@@ -122,12 +122,13 @@ function TearSheet({ d, onExplore }) {
 
           {/* Company Overview */}
           <SectionCard title="Company Overview" icon="building" iconColor="#2f6bff"
-            actions={<span className="tag" title="Profile enriched from external data"><Icon name="sparkles" size={10} /> Enriched</span>}>
-            <div className="row gap-6 wrap" style={{ marginBottom: 14 }}>
-              <span className="t-small text-muted">Enriched by:</span>
-              <span className="tag">PitchBook comps</span>
-              <span className="tag">Broker research</span>
-              <span className="tag">EU alt-data</span>
+            actions={<span className="tag" title="Built from the deal's own documents"><Icon name="fileText" size={10} /> From documents</span>}>
+            <div className="row gap-6 wrap center" style={{ marginBottom: 14 }}>
+              <span className="t-small text-muted">Sourced from:</span>
+              <span className="tag">Information Memorandum</span>
+              <span className="tag">Teaser</span>
+              <span className="tag">Process Letter</span>
+              <span className="tag" style={{ color: "var(--text-muted)" }}>+ external data (optional)</span>
             </div>
             <div className="kv-grid">
               <KV k="Description"><span style={{ fontWeight: 440, fontSize: 13 }}>{d.desc}</span></KV>
@@ -137,27 +138,30 @@ function TearSheet({ d, onExplore }) {
               <KV k="Founded">{d.founded}</KV>
               <KV k="Regions Served">{d.regions}</KV>
             </div>
+            <SourceLine metric="Company Overview" label="Information Memorandum (p.3) · Teaser" />
           </SectionCard>
 
           {/* Deal Terms */}
           <SectionCard title="Deal Terms" icon="scale" iconColor="#7c5cfc">
             <div className="kv-grid">
-              <KV k="Deal Structure"><span style={{ fontWeight: 440, fontSize: 13 }}>Majority recapitalization with management rollover and a co-investment sleeve.</span></KV>
-              <KV k="Investment Amount"><Prov value={"$" + d.ask + "M"} metric="Pre-money Valuation" conf="estimated" /></KV>
-              <KV k="Investment Stage">{d.stage}</KV>
-              <KV k="Ownership %"><Prov value={d.ownership != null ? d.ownership + "%" : "—"} metric="default" conf="estimated" /></KV>
-              <KV k="Use of Proceeds">Shareholder liquidity, M&A, intl. expansion</KV>
+              <KV k="Deal Structure"><span className="row gap-6 pointer" style={{ fontWeight: 440, fontSize: 13, alignItems: "flex-start" }} onClick={() => ctx.openSource("Deal Structure")} title="View source"><ConfDot level="verified" /><span>Majority recapitalization with management rollover and a co-investment sleeve.</span></span></KV>
+              <KV k="Investment Amount"><Prov value={d.ask != null ? "$" + d.ask + "M" : "—"} metric="Investment Amount" conf="estimated" /></KV>
+              <KV k="Investment Stage"><Prov value={d.stage} metric="Investment Stage" conf="verified" /></KV>
+              <KV k="Ownership %"><Prov value={d.ownership != null ? d.ownership + "%" : "—"} metric="Ownership" conf="estimated" /></KV>
+              <KV k="Use of Proceeds"><span className="row gap-6 pointer" style={{ fontWeight: 440, fontSize: 13, alignItems: "flex-start" }} onClick={() => ctx.openSource("Use of Proceeds")} title="View source"><ConfDot level="verified" /><span>Shareholder liquidity, M&A, intl. expansion.</span></span></KV>
             </div>
+            <SourceLine metric="Deal Terms" label="Process Letter (p.2) · Banker email" />
           </SectionCard>
 
           {/* Financial & Valuation Highlights */}
           <SectionCard title="Financial & Valuation Highlights" icon="trending" iconColor="#16a34a">
             <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(170px,1fr))", gap: 16 }}>
               <HiMetric k="Pre-money Valuation" v={d.preMoney != null ? "$" + d.preMoney + "M" : "—"} metric="Pre-money Valuation" conf="estimated" as="2026" />
-              <HiMetric k="Post-money Valuation" v={d.postMoney != null ? "$" + d.postMoney + "M" : "—"} metric="default" conf="estimated" as="2026" />
+              <HiMetric k="Post-money Valuation" v={d.postMoney != null ? "$" + d.postMoney + "M" : "—"} metric="Post-money Valuation" conf="estimated" as="2026" />
               <HiMetric k="Revenue" v={d.revenue != null ? "$" + d.revenue + "M" : "—"} metric="Revenue" conf="verified" yoy={d.revYoY} as="2022" />
               <HiMetric k="EBITDA" v={d.ebitda != null ? "$" + d.ebitda + "M" : "—"} metric="EBITDA" conf="verified" yoy={d.ebitdaYoY} as="2022" />
             </div>
+            <SourceLine metric="Pre-money Valuation" label="Process Letter (p.2) · Management model" />
           </SectionCard>
 
           {/* Financial Statements Summary */}
@@ -166,6 +170,7 @@ function TearSheet({ d, onExplore }) {
             <FinTable fin={fin} group="P&L" rows={fin.pl} />
             <FinTable fin={fin} group="Balance Sheet" rows={fin.bs} />
             <FinTable fin={fin} group="Performance" rows={fin.perf} last />
+            <SourceLine metric="EBITDA" label="Audited Financials (FY22) · Management model" />
           </SectionCard>
 
           {/* Key People */}
@@ -191,7 +196,11 @@ function TearSheet({ d, onExplore }) {
               ))}
             </div>
             {ppl.length > 2 && <button className="btn btn-secondary btn-sm" style={{ marginTop: 12 }} onClick={() => setShowPeople((s) => !s)}>{showPeople ? "Show less" : `Show ${ppl.length - 2} more`}</button>}
+            <SourceLine metric="Key People" label="Information Memorandum (p.12) · LinkedIn" />
           </SectionCard>
+
+          {/* Notes */}
+          <NotesCard d={d} />
         </div>
       </div>
 
@@ -281,7 +290,10 @@ function ActionablesCard({ d }) {
             <span className="conf-dot" style={{ width: 18, height: 18, borderRadius: 6, display: "inline-flex", alignItems: "center", justifyContent: "center", background: a.done ? "var(--green-500)" : "var(--bg-sunken)", color: a.done ? "#fff" : "var(--text-muted)", cursor: "pointer" }} onClick={() => toggle(a.id)}>{a.done ? <Icon name="check" size={11} /> : <Icon name={ACTION_ICON[a.type]} size={11} />}</span>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 12.5, fontWeight: 500, textDecoration: a.done ? "line-through" : "none", color: a.done ? "var(--text-muted)" : "var(--text-primary)" }}>{a.text}</div>
-              <div className="t-small">{a.owner} · {a.due}</div>
+              <div className="row gap-6 center wrap" style={{ marginTop: 2 }}>
+                <span className="t-small">{a.owner} · {a.due}</span>
+                {a.src && <span className="tag" style={{ fontSize: 9 }}><Icon name="sourceDoc" size={9} /> {a.src}</span>}
+              </div>
             </div>
             <span className="tag" style={{ fontSize: 10, textTransform: "capitalize" }}>{a.type}</span>
           </div>
@@ -309,6 +321,46 @@ function RailBtn({ icon, label, badge, onClick }) {
       <span className="row gap-9 center"><Icon name={icon} size={14} style={{ color: "var(--text-secondary)" }} />{label}</span>
       {badge && <span className="t-small">{badge}</span>}
     </div>
+  );
+}
+
+/* ---------- Source line: visible provenance under each tear-sheet section ---------- */
+function SourceLine({ metric, label }) {
+  const ctx = useContext(AppCtx);
+  return (
+    <div className="row gap-6 center pointer" style={{ marginTop: 14, paddingTop: 10, borderTop: "1px solid var(--border)", color: "var(--text-muted)" }}
+      onClick={() => ctx.openSource(metric)} title="View source documents">
+      <Icon name="sourceDoc" size={12} />
+      <span className="t-small">Source: {label}</span>
+      <Icon name="arrowRight" size={11} style={{ marginLeft: "auto" }} />
+    </div>
+  );
+}
+
+/* ---------- Notes (per deal, each traceable to its source) ---------- */
+function NotesCard({ d }) {
+  const ctx = useContext(AppCtx);
+  const notes = window.DB.notesFor(d.id);
+  return (
+    <SectionCard title="Notes" icon="fileText" iconColor="#2f6bff"
+      actions={<span className="tag">{notes.length} note{notes.length === 1 ? "" : "s"}</span>}>
+      {notes.length === 0 ? (
+        <p className="t-body" style={{ marginBottom: 12 }}>No notes yet. Capture what came out of a banker call or the pipeline meeting — each note keeps the source it came from.</p>
+      ) : (
+        <div className="col gap-10">
+          {notes.map((n, i) => (
+            <div key={i} className="card" style={{ padding: 12 }}>
+              <p style={{ fontSize: 13, lineHeight: 1.5, marginBottom: 8, color: "var(--text-primary)" }}>{n.text}</p>
+              <div className="row gap-8 center wrap">
+                <span className="t-small">{n.who} · {n.date}</span>
+                <span className="tag pointer" style={{ fontSize: 10, marginLeft: "auto" }} onClick={() => ctx.openSource("Notes")} title="View source"><Icon name="sourceDoc" size={10} /> {n.src}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <button className="btn btn-secondary btn-sm" style={{ marginTop: 12 }} onClick={() => ctx.toast("Add a note — captured with its source", "")}><Icon name="plus" size={13} /> Add note</button>
+    </SectionCard>
   );
 }
 

@@ -178,12 +178,12 @@ function IngestionSources() {
   return (
     <div style={{ maxWidth: 800 }}>
       <div className="card" style={{ marginBottom: 14, padding: "14px 16px", display: "flex", gap: 12, alignItems: "center", borderColor: "var(--blue-200)", background: "linear-gradient(90deg, var(--blue-50), #fff 70%)" }}>
-        <span className="feed-ic" style={{ background: "var(--blue-100)", color: "var(--blue-600)" }}><Icon name="sparkles" size={16} /></span>
+        <span className="feed-ic" style={{ background: "var(--blue-100)", color: "var(--blue-600)" }}><Icon name="mail" size={16} /></span>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 560 }}>Email → status automation</div>
-          <div className="t-small">Everything forwarded to <strong style={{ color: "var(--text-secondary)" }}>{db.intakeEmail}</strong> is parsed into the pipeline. The AI reads "next steps" tables and moves deals automatically.</div>
+          <div style={{ fontSize: 13, fontWeight: 560 }}>Deal intake</div>
+          <div className="t-small">Everything forwarded to <strong style={{ color: "var(--text-secondary)" }}>{db.intakeEmail}</strong> is ingested, indexed and filed to the right deal. Deals only change stage when you move them.</div>
         </div>
-        <button className="btn btn-secondary btn-sm" onClick={() => ctx.navigate("dealflow")}>Review updates <Icon name="arrowRight" size={13} /></button>
+        <button className="btn btn-secondary btn-sm" onClick={() => ctx.navigate("settings")}>Access control <Icon name="arrowRight" size={13} /></button>
       </div>
       <div className="card" style={{ overflow: "hidden" }}>
         {db.ingestion.map((s, i) => (

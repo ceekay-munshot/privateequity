@@ -34,7 +34,7 @@ function WorkspaceSettings() {
           <input className="input" readOnly value={db.intakeEmail} style={{ fontFamily: "var(--font-mono)" }} />
           <button className="btn btn-secondary nowrap" onClick={() => ctx.toast("Copied " + db.intakeEmail, "check")}><Icon name="link" size={14} /> Copy</button>
         </div>
-        <p className="t-small mt-8">Anything forwarded here is auto-parsed into the pipeline — teasers, IMs, and "next steps" tables.</p>
+        <p className="t-small mt-8">Teasers, IMs and memos forwarded here are ingested, indexed and filed to the right deal. Stage changes stay manual.</p>
       </div>
       <div className="card card-pad">
         <div className="label mb-8">Defaults</div>
@@ -60,12 +60,12 @@ function IntegrationsSettings() {
   return (
     <div style={{ maxWidth: 820 }}>
       <div className="card" style={{ marginBottom: 16, padding: "14px 16px", display: "flex", gap: 12, alignItems: "center", borderColor: "var(--blue-200)", background: "linear-gradient(90deg, var(--blue-50), #fff 70%)" }}>
-        <span className="feed-ic" style={{ background: "var(--blue-100)", color: "var(--blue-600)" }}><Icon name="sparkles" size={16} /></span>
+        <span className="feed-ic" style={{ background: "var(--blue-100)", color: "var(--blue-600)" }}><Icon name="database" size={16} /></span>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 13, fontWeight: 560 }}>Email → status automation is live</div>
-          <div className="t-small">The AI reads "next steps" tables in forwarded emails and moves deals through the pipeline automatically.</div>
+          <div style={{ fontSize: 13, fontWeight: 560 }}>Connected data sources</div>
+          <div className="t-small">Intake mailboxes, document stores and market-data providers feeding the pipeline. Stage changes are always made manually.</div>
         </div>
-        <button className="btn btn-secondary btn-sm" onClick={() => ctx.navigate("dealflow")}>Review updates <Icon name="arrowRight" size={13} /></button>
+        <button className="btn btn-secondary btn-sm" onClick={() => ctx.navigate("documents", { tab: "sources" })}>Ingestion sources <Icon name="arrowRight" size={13} /></button>
       </div>
       {cats.map((cat) => (
         <div key={cat} style={{ marginBottom: 18 }}>

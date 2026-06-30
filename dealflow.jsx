@@ -3,7 +3,7 @@
    Active pipeline (table / kanban) · Weekly Review · Archived
    Email→status automation · Excel import/export · actionables
    ============================================================ */
-const STAGES = ["Triaging", "Screening", "IC Review", "Pursuing"];
+const STAGES = ["Stage 1", "Stage 2", "Stage 3", "Stage 4"];
 
 function DealFlowView({ params }) {
   const ctx = useContext(AppCtx);
@@ -50,7 +50,7 @@ function DealFlowView({ params }) {
       )}
 
       {view === "weekly" ? <WeeklyReview deals={db.deals.filter((d) => d.isNew)} /> :
-       view === "archived" ? <ArchivedTable deals={archived} onRestore={(d) => move(d, "Screening")} /> : (
+       view === "archived" ? <ArchivedTable deals={archived} onRestore={(d) => move(d, "Stage 2")} /> : (
         <div style={{ display: "grid", gridTemplateColumns: "208px 1fr", gap: 20, alignItems: "start" }}>
           {/* filter rail */}
           <div className="card card-pad">
@@ -274,57 +274,6 @@ function ArchivedTable({ deals, onRestore }) {
   );
 }
 
-/* ---------- Email → status automation drawer ---------- */
-function EmailAutomationDrawer({ onClose }) {
-  const ctx = useContext(AppCtx);
-  const db = window.DB;
-  const [applied, setApplied] = useState({});
-  const isApplied = (eid, i, base) => applied[eid + ":" + i] !== undefined ? applied[eid + ":" + i] : base;
-  return (
-    <Drawer onClose={onClose}>
-      <div className="modal-head">
-        <div>
-          <div className="row gap-8 center mb-4"><span style={{ width: 28, height: 28, borderRadius: 8, background: "var(--blue-50)", color: "var(--blue-600)", display: "flex", alignItems: "center", justifyContent: "center" }}><Icon name="mail" size={15} /></span><h2 className="t-h2">Email → Status</h2></div>
-          <p className="t-body">The AI read these emails and the "next steps" tables inside them.</p>
-        </div>
-        <button className="x-btn" onClick={onClose}><Icon name="x" size={18} /></button>
-      </div>
-      <div className="modal-body scroll" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {db.inbox.map((e) => (
-          <div key={e.id} className="card card-pad">
-            <div className="row gap-10 center mb-8">
-              <span className="feed-ic" style={{ background: "var(--bg-sunken)", color: "var(--text-secondary)" }}><Icon name="mail" size={14} /></span>
-              <div style={{ flex: 1, minWidth: 0 }}><div style={{ fontSize: 12.5, fontWeight: 560 }} className="truncate">{e.subject}</div><div className="t-small">{e.from} · {e.time}</div></div>
-            </div>
-            <p className="t-small" style={{ fontStyle: "italic", marginBottom: 10 }}>"{e.preview}"</p>
-            <div className="label mb-8">Detected next steps</div>
-            <div className="col gap-8">
-              {e.updates.map((u, i) => {
-                const deal = db.dealById(u.deal);
-                const on = isApplied(e.id, i, u.applied);
-                return (
-                  <div key={i} className="card" style={{ padding: 11, background: "var(--bg-subtle)" }}>
-                    <div className="row between center mb-4">
-                      <span style={{ fontWeight: 540, fontSize: 12.5 }}>{deal ? deal.name : u.deal}</span>
-                      {u.from !== u.to
-                        ? <span className="row gap-5 center t-small"><StatusPill status={u.from} dot={false} /><Icon name="arrowRight" size={12} style={{ color: "var(--text-muted)" }} /><StatusPill status={u.to} dot={false} /></span>
-                        : <span className="tag">No status change</span>}
-                    </div>
-                    <div className="t-small" style={{ marginBottom: 8 }}>{u.step}</div>
-                    {on
-                      ? <span className="row gap-5 center" style={{ color: "var(--green-600)", fontSize: 11.5, fontWeight: 560 }}><Icon name="checkCircle" size={13} /> Applied automatically</span>
-                      : <button className="btn btn-secondary btn-sm" onClick={() => { setApplied((p) => ({ ...p, [e.id + ":" + i]: true })); ctx.toast("Applied — " + (deal ? deal.name : u.deal) + " updated", "check"); }}><Icon name="check" size={12} /> Apply update</button>}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="modal-foot"><button className="btn btn-secondary" onClick={onClose}>Close</button><button className="btn btn-primary" onClick={() => { onClose(); ctx.toast("All email updates applied", "check"); }}><Icon name="check" size={14} /> Apply all</button></div>
-    </Drawer>
-  );
-}
 
 /* ---------- Excel tracker import ---------- */
 function ExcelImportModal({ onClose }) {
@@ -473,5 +422,4 @@ function fmtDate(s) {
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 window.DealFlowView = DealFlowView;
-window.EmailAutomationDrawer = EmailAutomationDrawer;
 window.fmtDate = fmtDate;

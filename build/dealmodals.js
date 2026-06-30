@@ -11,7 +11,7 @@ function DealWizard({
     geo: "",
     source: "",
     size: "",
-    stage: "Screening"
+    stage: "Stage 1"
   });
   const steps = ["Deal Type", "Deal Details", "Documents", "Complete"];
   const set = (k, v) => setForm(f => ({
@@ -187,7 +187,7 @@ function DealWizard({
     className: "select",
     value: form.stage,
     onChange: e => set("stage", e.target.value)
-  }, ["New", "Triaging", "Screening", "IC Review", "Pursuing"].map(s => React.createElement("option", {
+  }, ["Stage 1", "Stage 2", "Stage 3", "Stage 4"].map(s => React.createElement("option", {
     key: s
   }, s))))), step === 2 && React.createElement("div", null, React.createElement("div", {
     style: {

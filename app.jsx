@@ -37,7 +37,6 @@ function App() {
   const [source, setSource] = uS(null);
   const [fileFilters, setFileFilters] = uS(null);
   const [editSection, setEditSection] = uS(null);
-  const [emailAuto, setEmailAuto] = uS(false);
   const [notifRead, setNotifRead] = uS({});
   const [toasts, setToasts] = uS([]);
 
@@ -74,7 +73,6 @@ function App() {
     openSource: (metric, value) => setSource({ metric, value }),
     openFileFilters: (cfg) => setFileFilters(cfg || {}),
     openEditSection: (s) => setEditSection(s || {}),
-    openEmailAutomation: () => setEmailAuto(true),
     notifRead, markNotifRead, markAllNotif,
   };
 
@@ -181,7 +179,6 @@ function App() {
       {source && <window.SourceModal metric={source.metric} value={source.value} onClose={() => setSource(null)} />}
       {fileFilters && <window.FileFiltersDrawer cfg={fileFilters} onClose={() => setFileFilters(null)} />}
       {editSection && <window.EditSectionModal section={editSection} onClose={() => setEditSection(null)} />}
-      {emailAuto && <window.EmailAutomationDrawer onClose={() => setEmailAuto(false)} />}
 
       {/* toasts */}
       <div className="toast-wrap">
